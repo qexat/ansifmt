@@ -1,3 +1,9 @@
+# 0.1.3
+
+## Fixes
+
+- Fixed a bug where unwanted `m` characters would appear in the output before every colored token
+
 # 0.1.2
 
 ## Fixes

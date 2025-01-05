@@ -266,12 +266,11 @@ let make_rgb_exn (red : int) (green : int) (blue : int) : t =
     embedded in a string based on the [color]. *)
 let to_ansi ~(ground : Ground.t) : t -> string = function
   | Minimal { color; bright } ->
-    Printf.sprintf "%d%dm" (Ground.to_int ~bright ground) (Minimal.to_int color)
-  | Advanced color ->
-    Printf.sprintf "%d8;5;%dm" (Ground.to_int ground) (Int8.to_int color)
+    Printf.sprintf "%d%d" (Ground.to_int ~bright ground) (Minimal.to_int color)
+  | Advanced color -> Printf.sprintf "%d8;5;%d" (Ground.to_int ground) (Int8.to_int color)
   | Rgb (r, g, b) ->
     Printf.sprintf
-      "%d8;2;%d;%d;%dm"
+      "%d8;2;%d;%d;%d"
       (Ground.to_int ground)
       (Int8.to_int r)
       (Int8.to_int g)
