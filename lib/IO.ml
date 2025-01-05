@@ -22,5 +22,9 @@ let print_formatted
     ?(out = stdout)
     value
     ~using:(module M) ->
-  Printf.fprintf out "%s%s" (Formatting.format ~stylizer value ~using:(module M)) line_end
+  Printf.fprintf
+    out
+    "%s%s"
+    (Formatting.Util.format ~stylizer value ~using:(module M))
+    line_end
 ;;

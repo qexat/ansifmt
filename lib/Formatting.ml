@@ -106,23 +106,25 @@ module type TOKENIZABLE = sig
   val tokenize : t -> Token.t list
 end
 
-(** [tokenize value ~using:(module M)] transforms [value] to a
+module Util = struct
+  (** [tokenize value ~using:(module M)] transforms [value] to a
     list of tokens. *)
-let tokenize : type t. t -> using:(module TOKENIZABLE with type t = t) -> Token.t list =
-  fun value ~using:(module M) -> M.tokenize value
-;;
+  let tokenize : type t. t -> using:(module TOKENIZABLE with type t = t) -> Token.t list =
+    fun value ~using:(module M) -> M.tokenize value
+  ;;
 
-(** [format ?stylizer value ~using:(module M)] transforms the
+  (** [format ?stylizer value ~using:(module M)] transforms the
     [value] into a pretty-printable string using the [stylizer]
     if [M] provides tokenization for the [value] type. *)
-let format
-  : type t.
-    ?stylizer:Stylizer.t -> t -> using:(module TOKENIZABLE with type t = t) -> string
-  =
-  fun ?(stylizer = Stylizer.default) value ~using:(module M) ->
-  (* TODO: handle line breaks / width-aware formatting *)
-  value
-  |> tokenize ~using:(module M)
-  |> List.map (Token.format ~stylizer)
-  |> String.concat ""
-;;
+  let format
+    : type t.
+      ?stylizer:Stylizer.t -> t -> using:(module TOKENIZABLE with type t = t) -> string
+    =
+    fun ?(stylizer = Stylizer.default) value ~using:(module M) ->
+    (* TODO: handle line breaks / width-aware formatting *)
+    value
+    |> tokenize ~using:(module M)
+    |> List.map (Token.format ~stylizer)
+    |> String.concat ""
+  ;;
+end
