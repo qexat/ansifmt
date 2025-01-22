@@ -30,6 +30,29 @@ end = struct
   ;;
 end
 
+module Pair = struct
+  type ('a, 'b) t = 'a * 'b
+
+  let first : ('a, 'b) t -> 'a = fun (first, _) -> first
+  let second : ('a, 'b) t -> 'b = fun (_, second) -> second
+
+  let map : ('a -> 'c) -> ('b -> 'd) -> ('a, 'b) t -> ('c, 'd) t =
+    fun func_first func_second (first, second) -> func_first first, func_second second
+  ;;
+
+  let map_first : ('a -> 'c) -> ('a, 'b) t -> ('c, 'b) t =
+    fun func pair -> map func Fun.id pair
+  ;;
+
+  let map_second : ('b -> 'c) -> ('a, 'b) t -> ('a, 'c) t =
+    fun func pair -> map Fun.id func pair
+  ;;
+
+  let map_uniform : ('a -> 'b) -> ('a, 'a) t -> ('b, 'b) t =
+    fun func pair -> map func func pair
+  ;;
+end
+
 module Triplet = struct
   type ('a, 'b, 'c) t = 'a * 'b * 'c
 

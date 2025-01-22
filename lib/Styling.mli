@@ -25,3 +25,7 @@ val create
 (** [to_ansi styling] renders the [styling] to an ANSI escape
     sequence as a string. *)
 val to_ansi : t -> string
+
+(** [wrap ~contents styling] wraps [contents] in an ANSI escape
+    sequence using [styling]. *)
+val wrap : contents:string -> t -> string

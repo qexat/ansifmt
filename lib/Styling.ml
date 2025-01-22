@@ -57,3 +57,15 @@ let to_ansi : t -> string = function
     add_color_to_buffer buffer background ~ground:Color.background;
     Buffer.contents buffer
 ;;
+
+let wrap : contents:string -> t -> string =
+  fun ~contents -> function
+  | { foreground; background; bold; dim; italic; underlined } as styling ->
+    let buffer = Buffer.create 16 in
+    if bold || dim then Buffer.add_string buffer (make_sgr_sequence "22");
+    if italic then Buffer.add_string buffer (make_sgr_sequence "23");
+    if underlined then Buffer.add_string buffer (make_sgr_sequence "24");
+    if Option.is_some foreground then Buffer.add_string buffer (make_sgr_sequence "39");
+    if Option.is_some background then Buffer.add_string buffer (make_sgr_sequence "49");
+    to_ansi styling ^ contents ^ Buffer.contents buffer
+;;

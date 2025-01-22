@@ -11,20 +11,17 @@
 let print_formatted
   : type t.
     ?stylizer:Formatting.Stylizer.t
+    -> ?parentheses:string * string
     -> ?line_end:string
     -> ?out:out_channel
     -> t
     -> using:(module Formatting.TOKENIZABLE with type t = t)
     -> unit
   =
-  fun ?(stylizer = Formatting.Stylizer.default)
-    ?(line_end = "\n")
-    ?(out = stdout)
-    value
-    ~using:(module M) ->
+  fun ?stylizer ?parentheses ?(line_end = "\n") ?(out = stdout) value ~using:(module M) ->
   Printf.fprintf
     out
     "%s%s"
-    (Formatting.Util.format ~stylizer value ~using:(module M))
+    (Formatting.Util.format ?stylizer ?parentheses value ~using:(module M))
     line_end
 ;;

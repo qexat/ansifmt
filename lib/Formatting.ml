@@ -1,3 +1,5 @@
+open Util
+
 module Token_type = struct
   type t =
     | Comment
@@ -86,11 +88,34 @@ module Token = struct
   let colon : t = Token_type.Punctuation_strong, ":"
 
   let format ?(stylizer : Stylizer.t = Stylizer.default) : t -> string =
-    fun (token_type, lexeme) ->
-    Printf.sprintf
-      "%s%s\x1b[22;23;24;25;39;49m"
-      (Styling.to_ansi (stylizer token_type))
-      lexeme
+    fun (token_type, lexeme) -> Styling.wrap ~contents:lexeme (stylizer token_type)
+  ;;
+end
+
+module Tree = struct
+  type t =
+    | Simple of Token.t list
+    | Parenthesized of t
+    | Block of t list
+
+  let simple : Token.t list -> t = fun tokens -> Simple tokens
+  let parenthesized : t -> t = fun tree -> Parenthesized tree
+  let block : t list -> t = fun trees -> Block trees
+
+  let rec format : ?parentheses:string * string -> ?stylizer:Stylizer.t -> t -> string =
+    fun ?(parentheses = "(", ")") ?(stylizer = Stylizer.default) tree ->
+    let opening_token, closing_token =
+      Pair.map_uniform (fun lexeme -> Token_type.Pair, lexeme) parentheses
+    in
+    tree
+    |> function
+    | Simple tokens -> tokens |> List.map (Token.format ~stylizer) |> String.concat ""
+    | Parenthesized subtree ->
+      Token.format ~stylizer opening_token
+      ^ format ~parentheses ~stylizer subtree
+      ^ Token.format ~stylizer closing_token
+    | Block subtrees ->
+      subtrees |> List.map (format ~parentheses ~stylizer) |> String.concat ""
   ;;
 end
 
@@ -103,14 +128,22 @@ module type TOKENIZABLE = sig
 
   (** [tokenize term] transforms [term] into a stream of
       formatter tokens. *)
-  val tokenize : t -> Token.t list
+  val tokenize : t -> Tree.t
 end
 
 module Util = struct
   (** [tokenize value ~using:(module M)] transforms [value] to a
     list of tokens. *)
-  let tokenize : type t. t -> using:(module TOKENIZABLE with type t = t) -> Token.t list =
+  let tokenize : type t. t -> using:(module TOKENIZABLE with type t = t) -> Tree.t =
     fun value ~using:(module M) -> M.tokenize value
+  ;;
+
+  let parenthesize_if
+    : type t. (t -> bool) -> t -> using:(module TOKENIZABLE with type t = t) -> Tree.t
+    =
+    fun predicate value ~using:(module M) ->
+    let base = tokenize value ~using:(module M) in
+    if predicate value then Tree.parenthesized base else base
   ;;
 
   (** [format ?stylizer value ~using:(module M)] transforms the
@@ -118,13 +151,14 @@ module Util = struct
     if [M] provides tokenization for the [value] type. *)
   let format
     : type t.
-      ?stylizer:Stylizer.t -> t -> using:(module TOKENIZABLE with type t = t) -> string
+      ?stylizer:Stylizer.t
+      -> ?parentheses:string * string
+      -> t
+      -> using:(module TOKENIZABLE with type t = t)
+      -> string
     =
-    fun ?(stylizer = Stylizer.default) value ~using:(module M) ->
+    fun ?stylizer ?parentheses value ~using:(module M) ->
     (* TODO: handle line breaks / width-aware formatting *)
-    value
-    |> tokenize ~using:(module M)
-    |> List.map (Token.format ~stylizer)
-    |> String.concat ""
+    value |> tokenize ~using:(module M) |> Tree.format ?parentheses ?stylizer
   ;;
 end
