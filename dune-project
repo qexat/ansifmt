@@ -2,7 +2,7 @@
 
 (name ansifmt)
 
-(version 0.2.0b3)
+(version 0.2.0b4)
 
 (generate_opam_files true)
 

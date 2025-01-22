@@ -102,6 +102,12 @@ module Tree = struct
   let parenthesized : t -> t = fun tree -> Parenthesized tree
   let block : t list -> t = fun trees -> Block trees
 
+  let parenthesize_if : ('a -> bool) -> ('a -> t) -> 'a -> t =
+    fun predicate tokenizer value ->
+    let base = tokenizer value in
+    if predicate value then parenthesized base else base
+  ;;
+
   let rec format : ?parentheses:string * string -> ?stylizer:Stylizer.t -> t -> string =
     fun ?(parentheses = "(", ")") ?(stylizer = Stylizer.default) tree ->
     let opening_token, closing_token =
