@@ -287,3 +287,32 @@ let to_ansi ~(ground : Ground.t) : t -> string = function
       (Int8.to_int g)
       (Int8.to_int b)
 ;;
+
+(** This function returns luminance of an RGB color in range between 0 and 255.
+
+See {!best_for_contrast} for a usage example. *)
+let luminance : [ `Rgb of Int8.t * Int8.t * Int8.t ] -> int = function
+  | `Rgb (r, g, b) ->
+    let r = Int8.to_int r in
+    let g = Int8.to_int g in
+    let b = Int8.to_int b in
+    ((2126 * r) + (7152 * g) + (722 * b)) / 10000
+;;
+
+(** [best_for_contrast ~threshold rgb] takes a color [rgb], [threshold] between
+0 and 255 (both inclusive) representing luminescence tolerance, and returns the
+suggested color theme for the opposite color to achieve the best contrast.
+
+For example, if [rgb] is a background colour, and [best_for_contrast] return
+[`Light], you should select a light foreground colour for the best readability.
+
+- {b NOTE}: Default [threshold] value is 128.
+- {b NOTE}: Higher [threshold] will suggest [`Light] more often and on brighter
+  colours. Lower [threshold] will suggest [`Light] for darker colours. The
+  opposite is true for [`Dark].
+*)
+let best_for_contrast ?(threshold = 128)
+  : [ `Rgb of Int8.t * Int8.t * Int8.t ] -> [ `Light | `Dark ]
+  =
+  fun rgb -> if luminance rgb < threshold then `Light else `Dark
+;;
