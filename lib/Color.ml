@@ -12,8 +12,9 @@ module Ground = struct
       color is on the foreground or the background. *)
 
   type t =
-    | Foreground
-    | Background
+    [ `Foreground
+    | `Background
+    ]
 
   (** [to_int ?bright ground] produces the corresponding leading
       digit for an SGR escape sequence to be set as foreground
@@ -24,15 +25,12 @@ module Ground = struct
     possible as it makes it more obscure - constants are easier
     to reason about and less error prone. *)
     match ground, bright with
-    | Foreground, false -> 3
-    | Background, false -> 4
-    | Foreground, true -> 9
-    | Background, true -> 10
+    | `Foreground, false -> 3
+    | `Background, false -> 4
+    | `Foreground, true -> 9
+    | `Background, true -> 10
   ;;
 end
-
-let foreground = Ground.Foreground
-let background = Ground.Background
 
 module Minimal = struct
   (** [Minimal] encodes the 8 default ANSI colors. *)
@@ -130,7 +128,7 @@ let bright_white : t = Minimal { color = Minimal.White; bright = true }
 
 (** [make_minimal ?bright value] creates a minimal color.
     If [value] is not a valid color code, it returns [None].
-    
+
     A valid color code is an integer i where 0 <= i <= 7. *)
 let make_minimal ?(bright : bool = false) : int -> t option = function
   | 0 -> Some (Minimal { color = Minimal.Black; bright })
@@ -147,7 +145,7 @@ let make_minimal ?(bright : bool = false) : int -> t option = function
 (** [make_minimal_exn ?bright value] creates a minimal color.
     If [value] is not a valid color code, it raises a [Failure]
     exception.
-    
+
     A valid color code is an integer i where 0 <= i <= 7. *)
 let make_minimal_exn ?(bright : bool = false) (value : int) : t =
   match make_minimal ~bright value with
@@ -157,7 +155,7 @@ let make_minimal_exn ?(bright : bool = false) (value : int) : t =
 
 (** [make_advanced value] creates an advanced color.
     If [value] is not a valid color code, it returns [None].
-    
+
     A valid color code is an integer i where 0 <= i < 256. *)
 let make_advanced (value : int) : t option =
   Option.map (fun (value : Int8.t) -> Advanced value) (Int8.of_int value)
@@ -166,7 +164,7 @@ let make_advanced (value : int) : t option =
 (** [make_advanced_exn value] creates an advanced color.
     If [value] is not a valid color code, it raises a [Failure]
     exception.
-    
+
     A valid color code is an integer i where 0 <= i < 256. *)
 let make_advanced_exn (value : int) : t = Advanced (Int8.of_int_exn value)
 
@@ -194,7 +192,7 @@ module Channel = struct
 
   (** [to_int8 channel] tries to convert the [channel]'s value
       into a [Int8] value.
-      
+
       If it fails, it returns the channel data wrapped in the
       [Error] variant. This is because this function is often
       applied in batch to every channel of an RGB component, so
@@ -217,9 +215,9 @@ end
     If any of [red], [green] or [blue] is not a valid channel
     value, it returns an [Error] which indicates which channel
     had an invalid value.
-    
+
     A valid channel value is an integer i where 0 <= i < 256.
-    
+
     For the version that returns an [option] instead, see
     [make_rgb_opt]. *)
 let make_rgb (red : int) (green : int) (blue : int) : (t, Channel.t) result =
@@ -237,9 +235,9 @@ let make_rgb (red : int) (green : int) (blue : int) : (t, Channel.t) result =
 (** [make_rgb_opt red green blue] creates an RGB color.
     If any of [red], [green] or [blue] is not a valid channel
     value, it returns [None].
-    
+
     A valid channel value is an integer i where 0 <= i < 256.
-    
+
     For the version that returns a result with the invalid
     channel data, see [make_rgb]. *)
 let make_rgb_opt (red : int) (green : int) (blue : int) : t option =
@@ -249,7 +247,7 @@ let make_rgb_opt (red : int) (green : int) (blue : int) : t option =
 (** [make_rgb_exn red green blue] creates an RGB color.
     If any of [red], [green] or [blue] is not a valid channel
     value, it raises a [Failure] exception.
-    
+
     A valid channel value is an integer i where 0 <= i < 256. *)
 let make_rgb_exn (red : int) (green : int) (blue : int) : t =
   match make_rgb red green blue with

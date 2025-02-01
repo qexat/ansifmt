@@ -53,8 +53,8 @@ let to_ansi : t -> string = function
     if dim then Buffer.add_string buffer (make_sgr_sequence "2");
     if italic then Buffer.add_string buffer (make_sgr_sequence "3");
     if underlined then Buffer.add_string buffer (make_sgr_sequence "4");
-    add_color_to_buffer buffer foreground ~ground:Color.foreground;
-    add_color_to_buffer buffer background ~ground:Color.background;
+    add_color_to_buffer buffer foreground ~ground:`Foreground;
+    add_color_to_buffer buffer background ~ground:`Background;
     Buffer.contents buffer
 ;;
 
