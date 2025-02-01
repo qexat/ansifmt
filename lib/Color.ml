@@ -133,7 +133,8 @@ let bright_white : t = `Minimal { color = Minimal.White; bright = true }
     If [value] is not a valid color code, it returns [None].
 
     A valid color code is an integer i where 0 <= i <= 7. *)
-let make_minimal ?(bright : bool = false) : int -> t option = function
+let make_minimal ?(bright : bool = false) : int -> [ `Minimal of minimal ] option
+  = function
   | 0 -> Some (`Minimal { color = Minimal.Black; bright })
   | 1 -> Some (`Minimal { color = Minimal.Red; bright })
   | 2 -> Some (`Minimal { color = Minimal.Green; bright })
@@ -150,7 +151,7 @@ let make_minimal ?(bright : bool = false) : int -> t option = function
     exception.
 
     A valid color code is an integer i where 0 <= i <= 7. *)
-let make_minimal_exn ?(bright : bool = false) (value : int) : t =
+let make_minimal_exn ?(bright : bool = false) (value : int) : [ `Minimal of minimal ] =
   match make_minimal ~bright value with
   | None -> failwith "value must be an integer between 0 and 7 (both included)"
   | Some color -> color
@@ -160,7 +161,7 @@ let make_minimal_exn ?(bright : bool = false) (value : int) : t =
     If [value] is not a valid color code, it returns [None].
 
     A valid color code is an integer i where 0 <= i < 256. *)
-let make_advanced (value : int) : t option =
+let make_advanced (value : int) : [ `Advanced of Int8.t ] option =
   Option.map (fun (value : Int8.t) -> `Advanced value) (Int8.of_int value)
 ;;
 
@@ -169,7 +170,9 @@ let make_advanced (value : int) : t option =
     exception.
 
     A valid color code is an integer i where 0 <= i < 256. *)
-let make_advanced_exn (value : int) : t = `Advanced (Int8.of_int_exn value)
+let make_advanced_exn (value : int) : [ `Advanced of Int8.t ] =
+  `Advanced (Int8.of_int_exn value)
+;;
 
 module Channel = struct
   (** Represents an RGB channel - either red, green, or blue. *)
@@ -223,7 +226,9 @@ end
 
     For the version that returns an [option] instead, see
     [make_rgb_opt]. *)
-let make_rgb (red : int) (green : int) (blue : int) : (t, Channel.t) result =
+let make_rgb (red : int) (green : int) (blue : int)
+  : ([ `Rgb of Int8.t * Int8.t * Int8.t ], Channel.t) result
+  =
   (* We convert each channel independently by mapping them to
   some specialized type so we can extract the information of
   what the first channel with an incorrect value was.
@@ -243,7 +248,9 @@ let make_rgb (red : int) (green : int) (blue : int) : (t, Channel.t) result =
 
     For the version that returns a result with the invalid
     channel data, see [make_rgb]. *)
-let make_rgb_opt (red : int) (green : int) (blue : int) : t option =
+let make_rgb_opt (red : int) (green : int) (blue : int)
+  : [ `Rgb of Int8.t * Int8.t * Int8.t ] option
+  =
   Result.to_option (make_rgb red green blue)
 ;;
 
@@ -252,7 +259,9 @@ let make_rgb_opt (red : int) (green : int) (blue : int) : t option =
     value, it raises a [Failure] exception.
 
     A valid channel value is an integer i where 0 <= i < 256. *)
-let make_rgb_exn (red : int) (green : int) (blue : int) : t =
+let make_rgb_exn (red : int) (green : int) (blue : int)
+  : [ `Rgb of Int8.t * Int8.t * Int8.t ]
+  =
   match make_rgb red green blue with
   | Ok color -> color
   | Error channel ->

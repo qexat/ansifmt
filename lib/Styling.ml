@@ -20,8 +20,8 @@ let none : t =
 ;;
 
 let create
-      ?(foreground : Color.t option)
-      ?(background : Color.t option)
+      ?(foreground : [< Color.t ] option)
+      ?(background : [< Color.t ] option)
       ?(bold : bool = false)
       ?(dim : bool = false)
       ?(italic : bool = false)
@@ -29,6 +29,8 @@ let create
       ()
   : t
   =
+  let foreground = (foreground :> Color.t option) in
+  let background = (background :> Color.t option) in
   { foreground; background; bold; dim; italic; underlined }
 ;;
 

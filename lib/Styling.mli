@@ -13,8 +13,8 @@ val none : t
 (** [create ?foreground ?background ?bold ?dim ?italic ?underlined ()]
     creates a new style object given the provided configuration. *)
 val create
-  :  ?foreground:Color.t
-  -> ?background:Color.t
+  :  ?foreground:[< Color.t ]
+  -> ?background:[< Color.t ]
   -> ?bold:bool
   -> ?dim:bool
   -> ?italic:bool
