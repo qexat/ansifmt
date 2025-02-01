@@ -60,67 +60,70 @@ module Minimal = struct
 end
 
 type t =
-  (* Minimal could also be a tuple, but I like the explicitness
+  [ (* Minimal could also be a tuple, but I like the explicitness
      of records. *)
-  | Minimal of
-      { color : Minimal.t
-      ; bright : bool
-      }
-  | Advanced of Int8.t
-  (* Here, I don't think a record is needed - the order of the
+    `Minimal of minimal
+  | `Advanced of Int8.t
+  | (* Here, I don't think a record is needed - the order of the
      channels are literally given out by the constructor's name. *)
-  | Rgb of Int8.t * Int8.t * Int8.t
+    `Rgb of Int8.t * Int8.t * Int8.t
+  ]
+
+and minimal =
+  { color : Minimal.t
+  ; bright : bool
+  }
 
 (* It's handy for the user to have module-level constants for
    each minimal color. *)
 
 (** Default black color. *)
-let black : t = Minimal { color = Minimal.Black; bright = false }
+let black : t = `Minimal { color = Minimal.Black; bright = false }
 
 (** Default red color. *)
-let red : t = Minimal { color = Minimal.Red; bright = false }
+let red : t = `Minimal { color = Minimal.Red; bright = false }
 
 (** Default green color. *)
-let green : t = Minimal { color = Minimal.Green; bright = false }
+let green : t = `Minimal { color = Minimal.Green; bright = false }
 
 (** Default yellow color. *)
-let yellow : t = Minimal { color = Minimal.Yellow; bright = false }
+let yellow : t = `Minimal { color = Minimal.Yellow; bright = false }
 
 (** Default blue color. *)
-let blue : t = Minimal { color = Minimal.Blue; bright = false }
+let blue : t = `Minimal { color = Minimal.Blue; bright = false }
 
 (** Default magenta color. *)
-let magenta : t = Minimal { color = Minimal.Magenta; bright = false }
+let magenta : t = `Minimal { color = Minimal.Magenta; bright = false }
 
 (** Default cyan color. *)
-let cyan : t = Minimal { color = Minimal.Cyan; bright = false }
+let cyan : t = `Minimal { color = Minimal.Cyan; bright = false }
 
 (** Default white color. *)
-let white : t = Minimal { color = Minimal.White; bright = false }
+let white : t = `Minimal { color = Minimal.White; bright = false }
 
 (** Default bright black (gray) color. *)
-let bright_black : t = Minimal { color = Minimal.Black; bright = true }
+let bright_black : t = `Minimal { color = Minimal.Black; bright = true }
 
 (** Default bright red color. *)
-let bright_red : t = Minimal { color = Minimal.Red; bright = true }
+let bright_red : t = `Minimal { color = Minimal.Red; bright = true }
 
 (** Default bright green color. *)
-let bright_green : t = Minimal { color = Minimal.Green; bright = true }
+let bright_green : t = `Minimal { color = Minimal.Green; bright = true }
 
 (** Default bright yellow color. *)
-let bright_yellow : t = Minimal { color = Minimal.Yellow; bright = true }
+let bright_yellow : t = `Minimal { color = Minimal.Yellow; bright = true }
 
 (** Default bright blue color. *)
-let bright_blue : t = Minimal { color = Minimal.Blue; bright = true }
+let bright_blue : t = `Minimal { color = Minimal.Blue; bright = true }
 
 (** Default bright magenta color. *)
-let bright_magenta : t = Minimal { color = Minimal.Magenta; bright = true }
+let bright_magenta : t = `Minimal { color = Minimal.Magenta; bright = true }
 
 (** Default bright cyan color. *)
-let bright_cyan : t = Minimal { color = Minimal.Cyan; bright = true }
+let bright_cyan : t = `Minimal { color = Minimal.Cyan; bright = true }
 
 (** Default bright white color. *)
-let bright_white : t = Minimal { color = Minimal.White; bright = true }
+let bright_white : t = `Minimal { color = Minimal.White; bright = true }
 
 (* It's also useful for the user to have module-level functions
    to easily create colors without knowing the intricacies and
@@ -131,14 +134,14 @@ let bright_white : t = Minimal { color = Minimal.White; bright = true }
 
     A valid color code is an integer i where 0 <= i <= 7. *)
 let make_minimal ?(bright : bool = false) : int -> t option = function
-  | 0 -> Some (Minimal { color = Minimal.Black; bright })
-  | 1 -> Some (Minimal { color = Minimal.Red; bright })
-  | 2 -> Some (Minimal { color = Minimal.Green; bright })
-  | 3 -> Some (Minimal { color = Minimal.Yellow; bright })
-  | 4 -> Some (Minimal { color = Minimal.Blue; bright })
-  | 5 -> Some (Minimal { color = Minimal.Magenta; bright })
-  | 6 -> Some (Minimal { color = Minimal.Cyan; bright })
-  | 7 -> Some (Minimal { color = Minimal.White; bright })
+  | 0 -> Some (`Minimal { color = Minimal.Black; bright })
+  | 1 -> Some (`Minimal { color = Minimal.Red; bright })
+  | 2 -> Some (`Minimal { color = Minimal.Green; bright })
+  | 3 -> Some (`Minimal { color = Minimal.Yellow; bright })
+  | 4 -> Some (`Minimal { color = Minimal.Blue; bright })
+  | 5 -> Some (`Minimal { color = Minimal.Magenta; bright })
+  | 6 -> Some (`Minimal { color = Minimal.Cyan; bright })
+  | 7 -> Some (`Minimal { color = Minimal.White; bright })
   | _ -> None
 ;;
 
@@ -158,7 +161,7 @@ let make_minimal_exn ?(bright : bool = false) (value : int) : t =
 
     A valid color code is an integer i where 0 <= i < 256. *)
 let make_advanced (value : int) : t option =
-  Option.map (fun (value : Int8.t) -> Advanced value) (Int8.of_int value)
+  Option.map (fun (value : Int8.t) -> `Advanced value) (Int8.of_int value)
 ;;
 
 (** [make_advanced_exn value] creates an advanced color.
@@ -166,7 +169,7 @@ let make_advanced (value : int) : t option =
     exception.
 
     A valid color code is an integer i where 0 <= i < 256. *)
-let make_advanced_exn (value : int) : t = Advanced (Int8.of_int_exn value)
+let make_advanced_exn (value : int) : t = `Advanced (Int8.of_int_exn value)
 
 module Channel = struct
   (** Represents an RGB channel - either red, green, or blue. *)
@@ -229,7 +232,7 @@ let make_rgb (red : int) (green : int) (blue : int) : (t, Channel.t) result =
   |> Triplet.map Channel.red Channel.green Channel.blue
   |> Triplet.map_uniform ~func:Channel.to_int8
   |> Triplet.all_ok
-  |> Result.map (fun (r, g, b) -> Rgb (r, g, b))
+  |> Result.map (fun (r, g, b) -> `Rgb (r, g, b))
 ;;
 
 (** [make_rgb_opt red green blue] creates an RGB color.
@@ -263,10 +266,11 @@ let make_rgb_exn (red : int) (green : int) (blue : int) : t =
 (** [to_ansi color] produces an SGR escape portion that can be
     embedded in a string based on the [color]. *)
 let to_ansi ~(ground : Ground.t) : t -> string = function
-  | Minimal { color; bright } ->
+  | `Minimal { color; bright } ->
     Printf.sprintf "%d%d" (Ground.to_int ~bright ground) (Minimal.to_int color)
-  | Advanced color -> Printf.sprintf "%d8;5;%d" (Ground.to_int ground) (Int8.to_int color)
-  | Rgb (r, g, b) ->
+  | `Advanced color ->
+    Printf.sprintf "%d8;5;%d" (Ground.to_int ground) (Int8.to_int color)
+  | `Rgb (r, g, b) ->
     Printf.sprintf
       "%d8;2;%d;%d;%d"
       (Ground.to_int ground)
