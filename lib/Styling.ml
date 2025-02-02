@@ -34,6 +34,23 @@ let create
   { foreground; background; bold; dim; italic; underlined }
 ;;
 
+let fg : [< Color.t ] -> t = fun foreground -> create ~foreground ()
+let bg : [< Color.t ] -> t = fun background -> create ~background ()
+let bold : t = { none with bold = true }
+let dim : t = { none with dim = true }
+let italic : t = { none with italic = true }
+let underlined : t = { none with underlined = true }
+
+let ( & ) left right =
+  let foreground = Util.Option.last left.foreground right.foreground in
+  let background = Util.Option.last left.background right.background in
+  let bold = left.bold || right.bold in
+  let dim = left.dim || right.dim in
+  let italic = left.italic || right.italic in
+  let underlined = left.underlined || right.underlined in
+  { foreground; background; bold; dim; italic; underlined }
+;;
+
 let make_sgr_sequence (inner : string) : string = "\x1b[" ^ inner ^ "m"
 
 let add_color_to_buffer
