@@ -272,6 +272,35 @@ let make_rgb_exn (red : int) (green : int) (blue : int)
          (Channel.value channel))
 ;;
 
+(** [make_rgb_hex str] parses an RGB color from a string [str] like 7057fc or #fbca04 *)
+let make_rgb_hex (hex : string) : [ `Rgb of Int8.t * Int8.t * Int8.t ] option =
+  let ( let* ) = Option.bind in
+  let of_hex_digit c =
+    match c with
+    | '0' .. '9' -> Some (Char.code c - Char.code '0')
+    | 'a' .. 'f' -> Some (Char.code c - Char.code 'a' + 10)
+    | _ -> None
+  in
+  let parse_channel char1 char2 =
+    let* digit1 = of_hex_digit char1 in
+    let* digit2 = of_hex_digit char2 in
+    Some ((digit1 * 16) + digit2)
+  in
+  let parse_hex = function
+    | [ r1; r2; g1; g2; b1; b2 ] ->
+      let* red = parse_channel r1 r2 in
+      let* green = parse_channel g1 g2 in
+      let* blue = parse_channel b1 b2 in
+      make_rgb_opt red green blue
+    | _ -> None
+  in
+  let parse_hex_color = function
+    | '#' :: hex -> parse_hex hex
+    | hex -> parse_hex hex
+  in
+  hex |> String.lowercase_ascii |> String.to_seq |> List.of_seq |> parse_hex_color
+;;
+
 (** [to_ansi color] produces an SGR escape portion that can be
     embedded in a string based on the [color]. *)
 let to_ansi ~(ground : Ground.t) : t -> string = function
