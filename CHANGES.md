@@ -9,7 +9,7 @@
 
 ## Breaking Changes
 
-- `Color.t` and `Color.Ground.t` are now polymorphic variants.
+- `Color.t` and `Color.Ground.t` are now polymorphic variants. (by @chshersh in #5)
 
 ## Removed
 
