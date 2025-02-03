@@ -144,14 +144,6 @@ module Util = struct
     fun value ~using:(module M) -> M.tokenize value
   ;;
 
-  let parenthesize_if
-    : type t. (t -> bool) -> t -> using:(module TOKENIZABLE with type t = t) -> Tree.t
-    =
-    fun predicate value ~using:(module M) ->
-    let base = tokenize value ~using:(module M) in
-    if predicate value then Tree.parenthesized base else base
-  ;;
-
   (** [format ?stylizer value ~using:(module M)] transforms the
     [value] into a pretty-printable string using the [stylizer]
     if [M] provides tokenization for the [value] type. *)
