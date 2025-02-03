@@ -30,6 +30,29 @@ end = struct
   ;;
 end
 
+module Pair = struct
+  type ('a, 'b) t = 'a * 'b
+
+  let first : ('a, 'b) t -> 'a = fun (first, _) -> first
+  let second : ('a, 'b) t -> 'b = fun (_, second) -> second
+
+  let map : ('a -> 'c) -> ('b -> 'd) -> ('a, 'b) t -> ('c, 'd) t =
+    fun func_first func_second (first, second) -> func_first first, func_second second
+  ;;
+
+  let map_first : ('a -> 'c) -> ('a, 'b) t -> ('c, 'b) t =
+    fun func pair -> map func Fun.id pair
+  ;;
+
+  let map_second : ('b -> 'c) -> ('a, 'b) t -> ('a, 'c) t =
+    fun func pair -> map Fun.id func pair
+  ;;
+
+  let map_uniform : ('a -> 'b) -> ('a, 'a) t -> ('b, 'b) t =
+    fun func pair -> map func func pair
+  ;;
+end
+
 module Triplet = struct
   type ('a, 'b, 'c) t = 'a * 'b * 'c
 
@@ -54,7 +77,7 @@ module Triplet = struct
     | _, _, (Error _ as error) -> error
   ;;
 
-  (** [all_error triplet] returns a version of [triplet] wrapped in 
+  (** [all_error triplet] returns a version of [triplet] wrapped in
       [result], which is of the [Error] variant if every member
       is also of the [Error] variant, otherwise it is whichever
       is the first [Ok]. *)
@@ -71,7 +94,7 @@ module Triplet = struct
   (** [any_ok triplet] returns a version of [triplet] wrapped
       in [result], which is the first [Ok] encountered if there
       is any, otherwise it is the triplet wrapped in [Error].
-      
+
       It is the same as [all_error], but it is semantically
       useful to have it as a separate function. *)
   let any_ok = all_error
@@ -91,5 +114,15 @@ module Triplet = struct
       It is equivalent to [map func func func triplet]. *)
   let map_uniform ~(func : 'a -> 'b) : ('a, 'a, 'a) t -> ('b, 'b, 'b) t =
     map func func func
+  ;;
+end
+
+module Option = struct
+  include Option
+
+  let last left right =
+    match right with
+    | Some _ -> right
+    | None -> left
   ;;
 end

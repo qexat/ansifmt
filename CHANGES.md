@@ -1,3 +1,20 @@
+# 0.2.0
+
+## Features
+
+- Add color functions `luminance` and `best_for_contrast`. (by @chshersh in #5)
+- Add styling functions `fg`, `bg`, `bold`, `dim`, `italic`, `underlined`. (by @chshersh in #6)
+- Add styling composition with `&`. (by @chshersh in #6)
+- Add function `make_rgb_hex` to parse hexadecimal codes into RGB colors. (by @chshersh in #7)
+
+## Breaking Changes
+
+- `Color.t` and `Color.Ground.t` are now polymorphic variants. (by @chshersh in #5)
+
+## Removed
+
+- `Util.parenthesize_if` which is deemed unuseful and is kind of a duplicate of `Tree.parenthesize_if` in `Formatting`.
+
 # 0.1.3
 
 ## Fixes

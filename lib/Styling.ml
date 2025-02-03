@@ -20,8 +20,8 @@ let none : t =
 ;;
 
 let create
-      ?(foreground : Color.t option)
-      ?(background : Color.t option)
+      ?(foreground : [< Color.t ] option)
+      ?(background : [< Color.t ] option)
       ?(bold : bool = false)
       ?(dim : bool = false)
       ?(italic : bool = false)
@@ -29,6 +29,25 @@ let create
       ()
   : t
   =
+  let foreground = (foreground :> Color.t option) in
+  let background = (background :> Color.t option) in
+  { foreground; background; bold; dim; italic; underlined }
+;;
+
+let fg : [< Color.t ] -> t = fun foreground -> create ~foreground ()
+let bg : [< Color.t ] -> t = fun background -> create ~background ()
+let bold : t = { none with bold = true }
+let dim : t = { none with dim = true }
+let italic : t = { none with italic = true }
+let underlined : t = { none with underlined = true }
+
+let ( & ) left right =
+  let foreground = Util.Option.last left.foreground right.foreground in
+  let background = Util.Option.last left.background right.background in
+  let bold = left.bold || right.bold in
+  let dim = left.dim || right.dim in
+  let italic = left.italic || right.italic in
+  let underlined = left.underlined || right.underlined in
   { foreground; background; bold; dim; italic; underlined }
 ;;
 
@@ -53,7 +72,19 @@ let to_ansi : t -> string = function
     if dim then Buffer.add_string buffer (make_sgr_sequence "2");
     if italic then Buffer.add_string buffer (make_sgr_sequence "3");
     if underlined then Buffer.add_string buffer (make_sgr_sequence "4");
-    add_color_to_buffer buffer foreground ~ground:Color.foreground;
-    add_color_to_buffer buffer background ~ground:Color.background;
+    add_color_to_buffer buffer foreground ~ground:`Foreground;
+    add_color_to_buffer buffer background ~ground:`Background;
     Buffer.contents buffer
+;;
+
+let wrap : contents:string -> t -> string =
+  fun ~contents -> function
+  | { foreground; background; bold; dim; italic; underlined } as styling ->
+    let buffer = Buffer.create 16 in
+    if bold || dim then Buffer.add_string buffer (make_sgr_sequence "22");
+    if italic then Buffer.add_string buffer (make_sgr_sequence "23");
+    if underlined then Buffer.add_string buffer (make_sgr_sequence "24");
+    if Option.is_some foreground then Buffer.add_string buffer (make_sgr_sequence "39");
+    if Option.is_some background then Buffer.add_string buffer (make_sgr_sequence "49");
+    to_ansi styling ^ contents ^ Buffer.contents buffer
 ;;
