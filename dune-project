@@ -20,6 +20,6 @@
  (synopsis "A simple, lightweight library for ANSI formatting")
  (description
   "A simple, lightweight library for ANSI formatting with powerful features such as a tokenization-based system for pretty-printing code in the terminal.")
- (depends ocaml)
+ (depends (ocaml (>= "4.08")))
  (tags
   ("ansi" "formatting" "pretty-printing" "terminal")))
