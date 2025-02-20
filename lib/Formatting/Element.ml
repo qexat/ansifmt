@@ -91,7 +91,8 @@ and format_blocks =
     element
     |> function
     | Singleton token -> [ Token.format ~stylizer token ]
-    | Blob tokens -> tokens |> List.map (Token.format ~stylizer)
+    | Blob tokens ->
+      tokens |> List.map (Token.format ~stylizer) |> String.concat "" |> List.singleton
     | Cluster elements -> elements |> List.map (format_blocks ~stylizer) |> List.flatten
     | Indented (count, element') ->
       format ~stylizer element'
