@@ -44,9 +44,16 @@ let indented_exn =
   | Some element -> element
 ;;
 
-(** [parenthsized ~pair element] produces a new element that
-  will be surrounded by a [pair] when formatting it. *)
-let parenthesized = fun ~pair element -> Parenthesized (pair, element)
+(** [parenthesized ~pair ?condition element] produces a new
+  element that will be surrounded by a [pair] when formatting
+  it. A [condition] can be optionally provided that will leave
+  the element as-is if it is not met. *)
+let parenthesized =
+  fun ?(pair = Parentheses) ?(condition = Bool.tautology) element ->
+  match condition element with
+  | false -> element
+  | true -> Parenthesized (pair, element)
+;;
 
 (** [intercalated ~separating elements] produces a new element
   where the [separating] list of tokens is intercalated
