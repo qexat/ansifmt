@@ -33,6 +33,7 @@ module Token_type = struct
     | Space
     | Indent
     | Line_break
+    | Custom of Styling.t
 end
 
 module Stylizer = struct
@@ -56,6 +57,7 @@ module Stylizer = struct
     | Macro -> Styling.create ~foreground:Color.red ()
     | Literal_string | String_template -> Styling.create ~foreground:Color.green ()
     | Pair | Punctuation_weak | Space | Indent | Line_break -> Styling.none
+    | Custom styling -> styling
   ;;
 end
 
