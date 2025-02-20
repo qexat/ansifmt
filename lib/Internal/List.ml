@@ -1,5 +1,8 @@
 include Stdlib.List
 
+(** [singleton element] creates a list with a single [element]. *)
+let singleton : 'a -> 'a t = fun element -> [ element ]
+
 (** [intersperse item list] inserts [item] between every
       element of [list]. This function is tail-recursive. *)
 let intersperse : 'a -> 'a t -> 'a t =
