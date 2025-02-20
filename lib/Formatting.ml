@@ -241,6 +241,15 @@ module type TOKENIZABLE = sig
   val tokenize : t -> Tree.t
 end
 
+module type CONVERTIBLE = sig
+  (** [CONVERTIBLE] is the interface for types that can be
+      transformed into a formatting element. *)
+
+  type t
+
+  val to_element : t -> Element.t
+end
+
 module Util = struct
   (** [tokenize value ~using:(module M)] transforms [value] to a
     list of tokens. *)
