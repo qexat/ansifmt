@@ -1,5 +1,11 @@
 module Color = Color
 module IO = IO
 module Formatting = Formatting
-module Prelude = Prelude
 module Styling = Styling
+
+type color = Color.t
+type styling = Styling.t
+type stylizer = Formatting.Stylizer.t
+
+let make_styling = Styling.create
+let format = Formatting.Util.format
