@@ -19,7 +19,7 @@
  (name ansifmt)
  (synopsis "A simple, lightweight library for ANSI formatting")
  (description
-  "A simple, lightweight library for ANSI formatting with powerful features such as a tokenization-based system for pretty-printing code in the terminal.")
+  "A simple, lightweight library for ANSI formatting with powerful features such as a element-based system for pretty-printing code in the terminal.")
  (depends
   (ocaml
    (>= "4.08")))
