@@ -2,7 +2,7 @@
 
 (name ansifmt)
 
-(version 0.2.0)
+(version 0.3.0-dev1)
 
 (generate_opam_files true)
 
@@ -20,6 +20,8 @@
  (synopsis "A simple, lightweight library for ANSI formatting")
  (description
   "A simple, lightweight library for ANSI formatting with powerful features such as a tokenization-based system for pretty-printing code in the terminal.")
- (depends (ocaml (>= "4.08")))
+ (depends
+  (ocaml
+   (>= "4.08")))
  (tags
   ("ansi" "formatting" "pretty-printing" "terminal")))
