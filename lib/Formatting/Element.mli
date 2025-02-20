@@ -36,7 +36,7 @@ val parenthesized : ?pair:pair -> ?condition:(t -> bool) -> t -> t
 
 (** [intercalated ~separating elements] produces a new element
   where the [separating] list of tokens is intercalated
-  between the [elments]. *)
+  between the [elements]. *)
 val intercalated : separating:Token.t list -> t -> t
 
 (** [sequence ~pair elements] produces a new element where the
