@@ -1,3 +1,5 @@
 (library
  (public_name ansifmt)
  (name ansifmt))
+
+(include_subdirs qualified)

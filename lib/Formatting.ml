@@ -1,4 +1,4 @@
-open Util
+open Internal
 
 module Token_type = struct
   type t =
