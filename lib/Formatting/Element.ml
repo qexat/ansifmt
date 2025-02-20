@@ -93,8 +93,7 @@ and format_blocks =
     | Singleton token -> [ Token.format ~stylizer token ]
     | Blob tokens ->
       tokens |> List.map (Token.format ~stylizer) |> String.concat "" |> List.singleton
-    | Cluster elements ->
-      elements |> List.map (format_blocks ~stylizer) |> List.map (String.concat "")
+    | Cluster elements -> elements |> List.map (format ~stylizer)
     | Indented (count, element') ->
       format ~stylizer element'
       |> String.split_on_char '\n'
