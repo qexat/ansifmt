@@ -1,6 +1,5 @@
 open Internal
 
-(** Represents a formatting element. *)
 type t =
   | Singleton of Token.t
   | Blob of Token.t list
@@ -9,34 +8,21 @@ type t =
   | Parenthesized of pair * t
   | Intercalated of Token.t list * t
 
-(** Represents a pair of characters (e.g. parentheses). *)
 and pair =
   | Parentheses
   | Brackets
   | Braces
   | Custom_pair of string * string
 
-(** [singleton token] creates a singleton element of [token]. *)
 let singleton = fun token -> Singleton token
-
-(** [blob tokens] groups [tokens] into an element. *)
 let blob = fun tokens -> Blob tokens
-
-(** [cluster elements] groups [elements] together. *)
 let cluster = fun elements -> Cluster elements
 
-(** [indented ~indent_count element] produces a new element
-  that will be indented [indent_count] times when formatting
-  it. Returns [None] if [indent_count] is negative. *)
 let indented =
   fun ~indent_count:count element ->
   if count < 0 then None else Some (Indented (count, element))
 ;;
 
-(** [indented_exn ~indent_count element] produces a new
-  element that will be indented [indent_count] times when
-  formatting it. Raises [Invalid_arg] if [indent_count] is
-  negative. *)
 let indented_exn =
   fun ~indent_count:count element ->
   match indented ~indent_count:count element with
@@ -44,10 +30,6 @@ let indented_exn =
   | Some element -> element
 ;;
 
-(** [parenthesized ~pair ?condition element] produces a new
-  element that will be surrounded by a [pair] when formatting
-  it. A [condition] can be optionally provided that will leave
-  the element as-is if it is not met. *)
 let parenthesized =
   fun ?(pair = Parentheses) ?(condition = Bool.tautology) element ->
   match condition element with
@@ -55,26 +37,15 @@ let parenthesized =
   | true -> Parenthesized (pair, element)
 ;;
 
-(** [intercalated ~separating elements] produces a new element
-  where the [separating] list of tokens is intercalated
-  between the [elments]. *)
 let intercalated = fun ~separating elements -> Intercalated (separating, elements)
 
-(** [sequence ~pair elements] produces a new element where the
-  [elements] are separated by a comma (and a space) and
-  surrounded by [pair]. *)
 let sequence =
   fun ~pair elements ->
   elements |> intercalated ~separating:[ Token.comma; Token.space ] |> parenthesized ~pair
 ;;
 
-(** [lines elements] produces a new element that intersperses
-  a line break between [elements] when formatting it,
-  WITHOUT a trailing newline. *)
 let lines = fun elements -> intercalated ~separating:[ Token.line_break ] elements
 
-(** [format ~stylizer element] renders the [element] into a
-  string using the [stylizer]. *)
 let rec format =
   fun ?(stylizer = Stylizer.default) element ->
   format_blocks ~stylizer element |> String.concat ""
