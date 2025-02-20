@@ -25,3 +25,20 @@ let print_formatted
     (Formatting.Util.format ?stylizer ?parentheses value ~using:(module M))
     line_end
 ;;
+
+let print_formatted2
+  : type t.
+    ?stylizer:Formatting.Stylizer.t
+    -> ?line_end:string
+    -> ?out:out_channel
+    -> t
+    -> using:(module Formatting.CONVERTIBLE with type t = t)
+    -> unit
+  =
+  fun ?stylizer ?(line_end = "\n") ?(out = stdout) value ~using:(module M) ->
+  Printf.fprintf
+    out
+    "%s%s"
+    (Formatting.Util.format_via_element ?stylizer value ~using:(module M))
+    line_end
+;;

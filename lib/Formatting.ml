@@ -272,4 +272,11 @@ module Util = struct
     (* TODO: handle line breaks / width-aware formatting *)
     value |> tokenize ~using:(module M) |> Tree.format ?parentheses ?stylizer
   ;;
+
+  let format_via_element
+    : type t.
+      ?stylizer:Stylizer.t -> t -> using:(module CONVERTIBLE with type t = t) -> string
+    =
+    fun ?stylizer value ~using:(module M) -> Element.format ?stylizer (M.to_element value)
+  ;;
 end
