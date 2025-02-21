@@ -11,7 +11,8 @@
 
 - Remove `Formatting.Tree`, `Formatting.TOKENIZABLE` and its associated functions. Use `Formatting.Element` instead.
 - Remove the `Prelude` module. It has merged with the core `Ansifmt` module.
-- Remove `print_formatted` alias from the prelude. It can still be found in `IO.print_formatted`.
+- Remove `print_formatted` alias from the prelude. The function can still be found as `IO.print_formatted`.
+- Remove `make_styling` alias from the prelude. The function can still be found as `Styling.create`.
 
 ## Internal
 
