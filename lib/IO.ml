@@ -20,7 +20,7 @@ let print_formatted
     -> ?line_end:string
     -> ?out:out_channel
     -> t
-    -> using:(module Interfaces.CONVERTIBLE with type t = t)
+    -> using:(module Interfaces.TO_ELEMENT with type t = t)
     -> unit
   =
   fun ?stylizer ?(line_end = "\n") ?(out = stdout) value ~using:(module M) ->

@@ -1,7 +1,7 @@
 (** [to_element value (module M)] converts [value] to an element
     using the transforming function provided by [M]. *)
 let to_element
-  : type t. t -> using:(module Interfaces.CONVERTIBLE with type t = t) -> Element.t
+  : type t. t -> using:(module Interfaces.TO_ELEMENT with type t = t) -> Element.t
   =
   fun value ~using:(module M) -> M.to_element value
 ;;
@@ -13,7 +13,7 @@ let format
   : type t.
     ?stylizer:Stylizer.t
     -> t
-    -> using:(module Interfaces.CONVERTIBLE with type t = t)
+    -> using:(module Interfaces.TO_ELEMENT with type t = t)
     -> string
   =
   fun ?stylizer value ~using -> value |> to_element ~using |> Element.format ?stylizer
