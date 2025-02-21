@@ -6,6 +6,7 @@
 - Add `Formatting.Element` that supersedes `Formatting.Tree`.
 - Add `Formatting.Interfaces.TO_ELEMENT` interface which establishes the contract to convert to a formatting element that is used by formatting and printing utilitary functions such as `format` and `IO.print_formatted`.
 - Expose the `Int8` module that is used by `Color`.
+- Add `Token.number` to easily construct a number literal token.
 
 ## Removed
 
