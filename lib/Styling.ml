@@ -1,4 +1,5 @@
 (** [Styling] encodes terminal styling as a CSS-like language. *)
+open Internal
 
 type t =
   { foreground : Color.t option
@@ -42,8 +43,8 @@ let italic : t = { none with italic = true }
 let underlined : t = { none with underlined = true }
 
 let ( & ) left right =
-  let foreground = Util.Option.last left.foreground right.foreground in
-  let background = Util.Option.last left.background right.background in
+  let foreground = Option.last_some left.foreground right.foreground in
+  let background = Option.last_some left.background right.background in
   let bold = left.bold || right.bold in
   let dim = left.dim || right.dim in
   let italic = left.italic || right.italic in

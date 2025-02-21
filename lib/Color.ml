@@ -5,7 +5,7 @@
   - 8-bit ([Advanced])
   - 24-bit ([Rgb]) *)
 
-open Util
+open Internal
 
 module Ground = struct
   (** [Ground] encodes the information on whether a certain

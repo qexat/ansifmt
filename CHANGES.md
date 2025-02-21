@@ -1,3 +1,27 @@
+# 0.3.0
+
+## Features
+
+- Add `Custom` token type variant which takes a styling, for tokens without particular semantics.
+- Add `Formatting.Element` that supersedes `Formatting.Tree`.
+- Add `Formatting.Interfaces.TO_ELEMENT` interface which establishes the contract to convert to a formatting element that is used by formatting and printing utilitary functions such as `format` and `IO.print_formatted`.
+- Expose the `Int8` module that is used by `Color`.
+- Add `Token.number` to easily construct a number literal token.
+
+## Removed
+
+- Remove `Formatting.Tree`, `Formatting.TOKENIZABLE` and its associated functions. Use `Formatting.Element` instead.
+- Remove the `Prelude` module. It has merged with the core `Ansifmt` module.
+- Remove `print_formatted` alias from the prelude. The function can still be found as `IO.print_formatted`.
+- Remove `make_styling` alias from the prelude. The function can still be found as `Styling.create`.
+
+## Internal
+
+- Renamed `Utils` to `Internal`.
+- `Formatting` is now a directory instead of a file containing all its submodules.
+- Added `List.intersperse` and `List.singleton` (used in `Formatting.Element`).
+- Added `Bool.tautology` (used in `Formatting.Element`).
+
 # 0.2.0
 
 ## Features
