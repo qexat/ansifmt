@@ -4,7 +4,7 @@
 
 At this stage, ansifmt has been fully rewritten. It now includes a test suite, which is mostly complete ; although coverage checking has not been added (yet?), the most important parts of the library are tested.
 
-We're still in beta 1 to leave us some chance to catch the inevitable oversights and careless issues that might have been introduced (or left over). The period until the date (albeit undetermined) of the v0.4.0 release will allow to polish this significative piece of work. Being full of breaking changes from the currently latest stable release -- as it drops some of its core features such as highlighting -- we have yet to think about smoothly transitioning, which might require making another library on top of ansifmt that aims to recover the features (purposefully) lost in this rewrite.
+We're still in beta 1 to leave us some chance to catch the inevitable oversights and careless issues that might have been introduced (or left over). The period until the date (albeit indeterminate) of the v0.4.0 release will allow to polish this significative piece of work. Being full of breaking changes from the currently latest stable release -- as it drops some of its core features such as highlighting -- we have yet to think about smoothly transitioning, which might require making another library on top of ansifmt that aims to recover the features (purposefully) lost in this rewrite.
 
 ## Changes
 
