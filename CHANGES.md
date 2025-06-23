@@ -1,3 +1,25 @@
+# 0.4.0b1
+
+**0.4.0 is a complete rewrite of ansifmt**.
+
+At this stage, ansifmt has been fully rewritten. It now includes a test suite, which is mostly complete ; although coverage checking has not been added (yet?), the most important parts of the library are tested.
+
+We're still in beta 1 to leave us some chance to catch the inevitable oversights and careless issues that might have been introduced (or left over). The period until the date (albeit undetermined) of the v0.4.0 release will allow to polish this significative piece of work. Being full of breaking changes from the currently latest stable release -- as it drops some of its core features such as highlighting -- we have yet to think about smoothly transitioning, which might require making another library on top of ansifmt that aims to recover the features (purposefully) lost in this rewrite.
+
+## Changes
+
+- `ansifmt` is now split in two modules: `Ansi`, which provides APIs for escape sequences (in `Ansi`), attributes as a low-level representation (in `Ansi.Attribute`) and terminal-compatible colors (in `Ansi.Color`), and `Fmt`, which provides a pretty-printable string API built on top of `Ansi`.
+- The `Color` API has been simplified. Colors can now be constructed using built-in integers ; they will be normalized-on-demand. `Advanced` is now called `Basic`. `Minimal` has been dropped as it is already covered by `Basic`, assuming that modern terminal emulators support 8-bit colors.
+- The `Styling` API (now called `Ansi`) has been tremendously simplified and is now based on a choice type instead of a record type.
+- The `Formatting` API has been fully dropped. We estimate that `ansifmt` is not the right place to put this in. Instead, we are working on another library, built on top of `ansifmt`, that will provide these features in an improved manner.
+- The `IO` API has been removed following `Formatting`.
+- A new `Fmt` API is available, which allows to construct strings with specific parts stylized using `Ansi`. This includes a convenient function, `Fmt.print`, to print in the terminal, stripping escape sequences when the output channel is not a TTY (by default -- this is configurable).
+- Every part of the library is serializable in a predictable way. Deserialization will come in a future beta release.
+
+## Performance
+
+No benchmark has been done, so this should be taken with a grain of salt, but it is likely that the new version exhibits better performance, due to simplification of implementation.
+
 # 0.3.0
 
 ## Features

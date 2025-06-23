@@ -1,0 +1,6 @@
+(library
+ (name test_ansi)
+ (inline_tests)
+ (libraries ansifmt)
+ (preprocess
+  (pps ppx_expect)))

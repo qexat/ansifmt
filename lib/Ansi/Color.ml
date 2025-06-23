@@ -1,0 +1,136 @@
+type t =
+  [ `Basic of int
+  | `Rgb of int * int * int
+  ]
+
+let normalize_value (value : int) : int = abs value mod 256
+
+let normalize_rgb (rgb : [ `Rgb of int * int * int ]) =
+  match rgb with
+  | `Rgb (r, g, b) ->
+    `Rgb
+      (normalize_value r, normalize_value g, normalize_value b)
+;;
+
+let normalize (color : t) : t =
+  match color with
+  | `Basic index -> `Basic (normalize_value index)
+  | `Rgb (r, g, b) ->
+    `Rgb
+      (normalize_value r, normalize_value g, normalize_value b)
+;;
+
+let to_attributes
+      (ground : [ `Foreground | `Background ])
+      (color : t)
+  : Attributes.t
+  =
+  let code =
+    match ground with
+    | `Foreground -> 38
+    | `Background -> 48
+  in
+  let parameters =
+    match normalize color with
+    | `Basic index -> [ 5; index ]
+    | `Rgb (r, g, b) -> [ 2; r; g; b ]
+  in
+  Attributes.create ~parameters code
+;;
+
+let black : t = `Basic 0
+let red : t = `Basic 1
+let green : t = `Basic 2
+let yellow : t = `Basic 3
+let blue : t = `Basic 4
+let magenta : t = `Basic 5
+let cyan : t = `Basic 6
+let white : t = `Basic 7
+let bright_black : t = `Basic 8
+let bright_red : t = `Basic 9
+let bright_green : t = `Basic 10
+let bright_yellow : t = `Basic 11
+let bright_blue : t = `Basic 12
+let bright_magenta : t = `Basic 13
+let bright_cyan : t = `Basic 14
+let bright_white : t = `Basic 15
+
+let basic : int -> [ `Basic of int ] option =
+  fun index ->
+  if index = normalize_value index
+  then Some (`Basic index)
+  else None
+;;
+
+let rgb : int * int * int -> [ `Rgb of int * int * int ] option =
+  fun (r, g, b) ->
+  if
+    r = normalize_value r
+    && g = normalize_value g
+    && b = normalize_value b
+  then Some (`Rgb (r, g, b))
+  else None
+;;
+
+let parse_hex : string -> [ `Rgb of int * int * int ] option =
+  let ( let+ ) = Option.bind in
+  let parse_hex_digit (char : char) : int option =
+    match char with
+    | '0' .. '9' -> Some (Char.code char - Char.code '0')
+    | 'A' .. 'F' -> Some (Char.code char - Char.code 'A' + 10)
+    | 'a' .. 'f' -> Some (Char.code char - Char.code 'a' + 10)
+    | _ -> None
+  in
+  let parse_channel (char0 : char) (char1 : char) : int option =
+    let+ digit0 = parse_hex_digit char0 in
+    let+ digit1 = parse_hex_digit char1 in
+    Some ((digit0 * 0x10) + digit1)
+  in
+  let rec try_parse_hex = function
+    | [ r; g; b ] -> try_parse_hex [ r; r; g; g; b; b ]
+    | [ r0; r1; g0; g1; b0; b1 ] ->
+      let+ red = parse_channel r0 r1 in
+      let+ green = parse_channel g0 g1 in
+      let+ blue = parse_channel b0 b1 in
+      rgb (red, green, blue)
+    | _ -> None
+  in
+  fun string ->
+    string
+    |> String.trim
+    |> String.to_seq
+    |> List.of_seq
+    |> function
+    | '#' :: rest -> try_parse_hex rest
+    | rest -> try_parse_hex rest
+;;
+
+(* TODO: add inverse of [serialize] *)
+let parse : string -> [ `Rgb of int * int * int ] option =
+  fun string ->
+  (* in case we want to add support for other stuff later *)
+  parse_hex string
+;;
+
+let luminance : [ `Rgb of int * int * int ] -> int =
+  fun rgb ->
+  match normalize_rgb rgb with
+  | `Rgb (r, g, b) ->
+    ((2_126 * r) + (7_152 * g) + (722 * b)) / 10_000
+;;
+
+let best_for_contrast ?(threshold = 127)
+  : [ `Rgb of int * int * int ] -> [ `Light | `Dark ]
+  =
+  fun rgb ->
+  if luminance rgb < normalize_value threshold
+  then `Light
+  else `Dark
+;;
+
+let serialize : t -> string =
+  fun color ->
+  match normalize color with
+  | `Basic n -> Printf.sprintf "basic(%d)" n
+  | `Rgb (r, g, b) -> Printf.sprintf "rgb(%d, %d, %d)" r g b
+;;
