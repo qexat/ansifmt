@@ -1,8 +1,8 @@
 # ansifmt
 
 > [!CAUTION]
-> Still in development. Untested.
+> Still in development.
 
-A simple, lightweight library for ANSI formatting with powerful features such as a element-based system for pretty-printing code in the terminal.
+A simple, lightweight library for ANSI styling.
 
 See a demo project: <https://github.com/qexat/ansifmt_demo>

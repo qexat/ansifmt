@@ -17,13 +17,12 @@
 
 (package
  (name ansifmt)
- (synopsis "A simple, lightweight library for ANSI formatting")
- (description
-  "A simple, lightweight library for ANSI formatting with powerful features such as a element-based system for pretty-printing code in the terminal.")
+ (synopsis "A simple, lightweight library for ANSI styling")
+ (description "A simple, lightweight library for ANSI styling.")
  (depends
   (ocaml
    (>= "4.08"))
   (ppx_inline_test :with-test)
   (ppx_expect :with-test))
  (tags
-  ("ansi" "formatting" "pretty-printing" "terminal")))
+  ("ansi" "formatting" "styling" "pretty-printing" "terminal")))
