@@ -25,6 +25,6 @@
   (ppx_inline_test :with-test)
   (ppx_expect :with-test)
   (re
-   (= "1.9.0")))
+   (= "1.12.0")))
  (tags
   ("ansi" "formatting" "styling" "pretty-printing" "terminal")))
