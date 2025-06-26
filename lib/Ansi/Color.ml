@@ -72,8 +72,9 @@ let rgb : int * int * int -> [ `Rgb of int * int * int ] option =
   else None
 ;;
 
-let parse_hex : string -> [ `Rgb of int * int * int ] option =
-  let ( let+ ) = Option.bind in
+let ( let+ ) = Option.bind
+
+let of_hex_repr : string -> [ `Rgb of int * int * int ] option =
   let parse_hex_digit (char : char) : int option =
     match char with
     | '0' .. '9' -> Some (Char.code char - Char.code '0')
@@ -105,13 +106,26 @@ let parse_hex : string -> [ `Rgb of int * int * int ] option =
     | rest -> try_parse_hex rest
 ;;
 
-let parse_rgb : string -> [ `Rgb of int * int * int ] option =
-  let ( let+ ) = Option.bind in
+let parse_basic : string -> [> `Basic of int ] option =
   let pattern =
     Re.compile
     @@ Re.Pcre.re
          ~flags:[ `CASELESS ]
-         {|^rgb\s*\(\s*(0|[1-9][0-9]*)\s*,\s*(0|[1-9][0-9]*)\s*,\s*(0|[1-9][0-9]*)\s*(,\s*)?\)$|}
+         {|^\s*basic\s*\(\s*(0|[1-9][0-9]*)\s*\)\s*$|}
+  in
+  fun string ->
+    let+ match' = Re.exec_opt pattern string in
+    let+ group = Re.Group.get_opt match' 1 in
+    let+ index = int_of_string_opt group in
+    Some (`Basic index)
+;;
+
+let parse_rgb : string -> [> `Rgb of int * int * int ] option =
+  let pattern =
+    Re.compile
+    @@ Re.Pcre.re
+         ~flags:[ `CASELESS ]
+         {|^\s*rgb\s*\(\s*(0|[1-9][0-9]*)\s*,\s*(0|[1-9][0-9]*)\s*,\s*(0|[1-9][0-9]*)\s*(,\s*)?\)\s*$|}
   in
   fun string ->
     let+ match' = Re.exec_opt pattern string in
@@ -124,15 +138,17 @@ let parse_rgb : string -> [ `Rgb of int * int * int ] option =
     Some (`Rgb (red, green, blue))
 ;;
 
-(* TODO: add inverse of [serialize] *)
-let parse : string -> [ `Rgb of int * int * int ] option =
-  let ( let- ) option func =
+let parse : string -> t option =
+  let ( let- )
+    : type a. a option -> (unit -> a option) -> a option
+    =
+    fun option func ->
     match option with
     | None -> func ()
     | Some _ -> option
   in
   fun string ->
-    let- () = parse_hex string in
+    let- () = parse_basic string in
     parse_rgb string
 ;;
 

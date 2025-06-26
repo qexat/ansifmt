@@ -77,12 +77,35 @@ val rgb : int * int * int -> [ `Rgb of int * int * int ] option
 
 (** These functions parse strings to get a color from them. *)
 
+(** [of_hex_repr string] attempts to parse the [string] as the
+    representation of an hexadecimal number.
+    
+    It allows:
+    - Leading hash ([#f864a0], optional)
+    - Implicitly doubled digits ([#ddd]) *)
+val of_hex_repr : string -> [ `Rgb of int * int * int ] option
+
 (** [parse string] attempts to find a serialized color in the
     [string].
 
-    It aims to support:
-    - Hexadecimal ([#f864a0], [#ddd], [e8a23f]) *)
-val parse : string -> [ `Rgb of int * int * int ] option
+    It supports [rgb(r, g, b)] and [basic(n)], ignoring spaces
+    and case. Numbers greater than 255 are allowed, but not
+    less than 0. *)
+val parse : string -> t option
+
+(** [parse_basic string] attempts to find a serialized basic
+    color in the [string].
+
+    This function is like [parse], but only understands
+    [basic(n)]. *)
+val parse_basic : string -> [ `Basic of int ] option
+
+(** [parse_rgb string] attempts to find a serialized RGB color
+    in the [string].
+
+    This function is like [parse], but only understands
+    [rgb(r, g, b)]. *)
+val parse_rgb : string -> [ `Rgb of int * int * int ] option
 
 (** {2 Utility functions} *)
 

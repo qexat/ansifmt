@@ -34,35 +34,146 @@ module Test_rgb = struct
   ;;
 end
 
-module Test_parse = struct
-  let%test "parse valid hexadecimal, 6 characters, with hash" =
-    parse "#FF8CB9" = Some Fixtures.rgb_pink
-  ;;
-
-  let%test "parse valid hexadecimal, 3 characters, with hash" =
-    parse "#888" = Some (`Rgb (136, 136, 136))
-  ;;
-
-  let%test "parse valid hexadecimal, 6 characters, no hash" =
-    parse "854221" = Some Fixtures.rgb_brown
-  ;;
-
-  let%test "parse valid hexadecimal, 3 characters, no hash" =
-    parse "fff" = Some (`Rgb (255, 255, 255))
-  ;;
-
-  let%test "parse invalid hexadecimal (4 characters)" =
-    parse "#d0d0" = None
+module Test_of_hex_repr = struct
+  let%test
+      "of_hex_repr valid hexadecimal, 6 characters, with hash"
+    =
+    of_hex_repr "#FF8CB9" = Some Fixtures.rgb_pink
   ;;
 
   let%test
-      "parse invalid hexadecimal (characters outside of \
-       [0-9A-F])"
+      "of_hex_repr valid hexadecimal, 3 characters, with hash"
     =
-    parse "#3g4zME" = None
+    of_hex_repr "#888" = Some (`Rgb (136, 136, 136))
   ;;
 
-  let%test "parse invalid hexadecimal (empty)" = parse "" = None
+  let%test
+      "of_hex_repr valid hexadecimal, 6 characters, no hash"
+    =
+    of_hex_repr "854221" = Some Fixtures.rgb_brown
+  ;;
+
+  let%test
+      "of_hex_repr valid hexadecimal, 3 characters, no hash"
+    =
+    of_hex_repr "fff" = Some (`Rgb (255, 255, 255))
+  ;;
+
+  let%test "of_hex_repr invalid hexadecimal (4 characters)" =
+    of_hex_repr "#d0d0" = None
+  ;;
+
+  let%test
+      "of_hex_repr invalid hexadecimal (characters outside of \
+       [0-9A-F])"
+    =
+    of_hex_repr "#3g4zME" = None
+  ;;
+
+  let%test "of_hex_repr invalid hexadecimal (empty)" =
+    of_hex_repr "" = None
+  ;;
+end
+
+module Test_parse_basic = struct
+  let%test "parse valid basic in bounds 0-255" =
+    parse_basic "basic(173)" = Some Fixtures.salmon
+  ;;
+
+  let%test
+      "parse valid basic in bounds 0-255, different formatting"
+    =
+    parse_basic " BaSiC (  244) " = Some Fixtures.middle_gray
+  ;;
+
+  let%test "parse valid basic out of bounds >255" =
+    parse_basic "basic(260)" = Some Fixtures.blue_by_modulo
+  ;;
+
+  let%test "parse invalid basic out of bounds <0" =
+    parse_basic "basic(-9)" = None
+  ;;
+
+  let%test "parse invalid basic starting with #" =
+    parse_basic "#basic(42)" = None
+  ;;
+
+  let%test "parse invalid basic with 3 arguments" =
+    parse_basic "basic(255, 140, 185)" = None
+  ;;
+
+  let%test "parse invalid empty string" = parse_basic "" = None
+end
+
+module Test_parse_rgb = struct
+  let%test "parse valid rgb in bounds 0-255" =
+    parse_rgb "rgb(255, 140, 185)" = Some Fixtures.rgb_pink
+  ;;
+
+  let%test
+      "parse valid rgb in bounds 0-255, different formatting"
+    =
+    parse_rgb " RGb ( 133 ,66  ,33)   "
+    = Some Fixtures.rgb_brown
+  ;;
+
+  let%test "parse valid rgb out of bounds >255" =
+    parse_rgb "rgb(511, 383, 256)" = Some (`Rgb (511, 383, 256))
+  ;;
+
+  let%test "parse invalid rgb out of bounds <0" =
+    parse_rgb "rgb(-21, 476, 298)" = None
+  ;;
+
+  let%test "parse invalid rgb starting with #" =
+    parse_rgb "#rgb(57, 189, 43)" = None
+  ;;
+
+  let%test "parse invalid rgba with alpha channel" =
+    parse_rgb "rgba(100, 50, 0, 0.5)" = None
+  ;;
+
+  let%test "parse invalid rgb with ratios" =
+    parse_rgb "rgb(0.6, 0.3, 0.47)" = None
+  ;;
+
+  let%test "parse invalid rgb with one argument" =
+    parse_rgb "rgb(23)" = None
+  ;;
+
+  let%test "parse invalid empty string" = parse_rgb "" = None
+end
+
+module Test_parse = struct
+  (* NOTE: These tests are copies of Test_parse_basic and
+     Test_parse_rgb, because we want to be sure that their
+     behaviors are matched without introducing functor logic *)
+
+  let%test "parse valid basic in bounds 0-255" =
+    parse "basic(173)" = Some Fixtures.salmon
+  ;;
+
+  let%test
+      "parse valid basic in bounds 0-255, different formatting"
+    =
+    parse " BaSiC (  244) " = Some Fixtures.middle_gray
+  ;;
+
+  let%test "parse valid basic out of bounds >255" =
+    parse "basic(260)" = Some Fixtures.blue_by_modulo
+  ;;
+
+  let%test "parse invalid basic out of bounds <0" =
+    parse "basic(-9)" = None
+  ;;
+
+  let%test "parse invalid basic starting with #" =
+    parse "#basic(42)" = None
+  ;;
+
+  let%test "parse invalid basic with 3 arguments" =
+    parse "basic(255, 140, 185)" = None
+  ;;
 
   let%test "parse valid rgb in bounds 0-255" =
     parse "rgb(255, 140, 185)" = Some Fixtures.rgb_pink
@@ -71,7 +182,7 @@ module Test_parse = struct
   let%test
       "parse valid rgb in bounds 0-255, different formatting"
     =
-    parse "RGb ( 133 ,66  ,33)" = Some Fixtures.rgb_brown
+    parse " RGb ( 133 ,66  ,33)   " = Some Fixtures.rgb_brown
   ;;
 
   let%test "parse valid rgb out of bounds >255" =
@@ -93,6 +204,12 @@ module Test_parse = struct
   let%test "parse invalid rgb with ratios" =
     parse "rgb(0.6, 0.3, 0.47)" = None
   ;;
+
+  let%test "parse invalid rgb with one argument" =
+    parse "rgb(23)" = None
+  ;;
+
+  let%test "parse invalid empty string" = parse "" = None
 end
 
 module Test_luminance = struct
