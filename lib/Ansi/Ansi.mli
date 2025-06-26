@@ -38,7 +38,7 @@ val unshow : t -> string
 
 (** [wrap ansi string] wraps [string] with the rendered [ansi]
     escape sequence and its cancelling counterpart.
-    
+
     For example, if [string] is ["Hello"] and [ansi] is
     [`Bold], the result will be ["\x1b\[1mHello\x1b\[22m"],
     which makes the string appear bold but not what comes

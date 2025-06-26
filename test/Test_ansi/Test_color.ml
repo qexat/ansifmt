@@ -216,29 +216,17 @@ module Test_luminance = struct
   (* TODO *)
 end
 
+module Test_perceived_lightness = struct
+  (* TODO *)
+end
+
 module Test_best_for_contrast = struct
-  let%test "best_for_contrast pink, default threshold" =
+  let%test "best_for_contrast pink" =
     best_for_contrast Fixtures.rgb_pink = `Dark
   ;;
 
-  let%test "best_for_contrast dark brown, default threshold" =
+  let%test "best_for_contrast dark brown" =
     best_for_contrast Fixtures.rgb_brown = `Light
-  ;;
-
-  let%test "best_for_contrast pink, high threshold" =
-    best_for_contrast ~threshold:191 Fixtures.rgb_pink = `Light
-  ;;
-
-  let%test "best_for_contrast dark brown, high threshold" =
-    best_for_contrast ~threshold:191 Fixtures.rgb_brown = `Light
-  ;;
-
-  let%test "best_for_contrast pink, low threshold" =
-    best_for_contrast ~threshold:63 Fixtures.rgb_pink = `Dark
-  ;;
-
-  let%test "best_for_contrast dark brown, low threshold" =
-    best_for_contrast ~threshold:63 Fixtures.rgb_brown = `Dark
   ;;
 end
 

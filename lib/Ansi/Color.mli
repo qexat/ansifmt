@@ -22,7 +22,7 @@ type t =
 
 (** [to_attributes ground color] produces the attribute record
     of the [color].
-    
+
     Since the code depends on whether the color is applied to
     the foreground or the background, this latter piece of
     information must also be provided via [ground]. *)
@@ -79,7 +79,7 @@ val rgb : int * int * int -> [ `Rgb of int * int * int ] option
 
 (** [of_hex_repr string] attempts to parse the [string] as the
     representation of an hexadecimal number.
-    
+
     It allows:
     - Leading hash ([#f864a0], optional)
     - Implicitly doubled digits ([#ddd]) *)
@@ -110,43 +110,46 @@ val parse_rgb : string -> [ `Rgb of int * int * int ] option
 (** {2 Utility functions} *)
 
 (** [luminance color] returns the luminance of the [color] as
-    an integer between 0 and 255.
+    a floating-point number between 0 and 1.
 
     {b Important:} This is {b NOT} a function to estimate
-    perceived lightness. This is a fast approximation that is
-    good enough in terminal emulators.  
-    
-    {b Note:} the color is normalized before calculation.
-    
-    {b Note:} this function is only available for RGB colors. *)
-val luminance : [ `Rgb of int * int * int ] -> int
+    perceived lightness. For that, see {!perceived_lightness}. 
 
-(** [best_for_contrast ?threshold color] determines whether a
-    light or dark opposite color is best given a [threshold].
-    
+    {b Note:} the color is normalized before calculation.
+
+    {b Note:} this function is only available for RGB colors. *)
+val luminance : [ `Rgb of int * int * int ] -> float
+
+(** [perceived_lightness color] returns the perceived lightness
+    of the [color] as an integer between 0 and 100.
+
+    {b Note:} the color is normalized before calculation.
+
+    {b Note:} this function is only available for RGB colors. *)
+val perceived_lightness : [ `Rgb of int * int * int ] -> int
+
+(** [best_for_contrast color] determines whether a light or
+    dark opposite color is best.
+
     For example, if [color] is a background color, this
     function will tell whether the text written on top of it
     should be light or dark for the best readability.
-    
-    {b Important:} the calculation is based on luminance,
-    {b not perceived lightness}. See comment on {!luminance}.
-    
-    {b Note:} if not provided, the threshold is set to 127.
-    It should be a value between 0 and 255.
-    A higher threshold will be more likely to suggest [`Light]
-    even for lighter [color]s. A lower one will be more likely
-    to suggest [`Dark] for lighter [color]s.
+
+    {b Note:} the calculation is based on
+    {{!perceived_lightness}perceived lightness}.
 
     {b Note:} the color is normalized before calculation.
 
     {b Note:} this function is only available for RGB colors. *)
 val best_for_contrast
-  :  ?threshold:int
-  -> [ `Rgb of int * int * int ]
+  :  [ `Rgb of int * int * int ]
   -> [ `Light | `Dark ]
 
 (** [serialize color] produces a serialized representation of
     the [color].
-    
+
+    {b Tip:} the serialized color can be retreived back using
+    {!parse}.
+
     {b Note:} colors are normalized before serialization. *)
 val serialize : t -> string

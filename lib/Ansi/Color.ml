@@ -5,13 +5,6 @@ type t =
 
 let normalize_value (value : int) : int = abs value mod 256
 
-let normalize_rgb (rgb : [ `Rgb of int * int * int ]) =
-  match rgb with
-  | `Rgb (r, g, b) ->
-    `Rgb
-      (normalize_value r, normalize_value g, normalize_value b)
-;;
-
 let normalize (color : t) : t =
   match color with
   | `Basic index -> `Basic (normalize_value index)
@@ -152,20 +145,48 @@ let parse : string -> t option =
     parse_rgb string
 ;;
 
-let luminance : [ `Rgb of int * int * int ] -> int =
+(* Linearization, luminance and perceived lightness algorithms
+   are mostly based on the following StackOverflow comment:
+   <https://stackoverflow.com/a/56678483>, with some
+   adjustements. *)
+
+let linearize
+  : [ `Rgb of int * int * int ] -> float * float * float
+  =
+  let linearize_channel channel =
+    let channel_srgb = Int.to_float channel /. 255. in
+    if channel_srgb <= 0.04045
+    then channel_srgb /. 12.92
+    else ((channel_srgb +. 0.055) /. 1.055) ** 2.4
+  in
   fun rgb ->
-  match normalize_rgb rgb with
-  | `Rgb (r, g, b) ->
-    ((2_126 * r) + (7_152 * g) + (722 * b)) / 10_000
+    match rgb with
+    | `Rgb (r, g, b) ->
+      ( linearize_channel r
+      , linearize_channel g
+      , linearize_channel b )
 ;;
 
-let best_for_contrast ?(threshold = 127)
+let luminance : [ `Rgb of int * int * int ] -> float =
+  fun rgb ->
+  let (r, g, b) = linearize rgb in
+  (0.2126 *. r) +. (0.7152 *. g) +. (0.0722 *. b)
+;;
+
+let perceived_lightness : [ `Rgb of int * int * int ] -> int =
+  fun rgb ->
+  let luminance = luminance rgb in
+  (if luminance <= 216. /. 24389.
+   then luminance *. 903.3
+   else ((luminance ** (1. /. 3.)) *. 116.) -. 16.)
+  |> Float.to_int
+;;
+
+let best_for_contrast
   : [ `Rgb of int * int * int ] -> [ `Light | `Dark ]
   =
   fun rgb ->
-  if luminance rgb < normalize_value threshold
-  then `Light
-  else `Dark
+  if perceived_lightness rgb < 50 then `Light else `Dark
 ;;
 
 let serialize : t -> string =
