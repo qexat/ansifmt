@@ -105,11 +105,35 @@ let parse_hex : string -> [ `Rgb of int * int * int ] option =
     | rest -> try_parse_hex rest
 ;;
 
+let parse_rgb : string -> [ `Rgb of int * int * int ] option =
+  let ( let+ ) = Option.bind in
+  let pattern =
+    Re.compile
+    @@ Re.Pcre.re
+         ~flags:[ `CASELESS ]
+         {|^rgb\s*\(\s*(0|[1-9][0-9]*)\s*,\s*(0|[1-9][0-9]*)\s*,\s*(0|[1-9][0-9]*)\s*(,\s*)?\)$|}
+  in
+  fun string ->
+    let+ match' = Re.exec_opt pattern string in
+    let+ red_group = Re.Group.get_opt match' 1 in
+    let+ green_group = Re.Group.get_opt match' 2 in
+    let+ blue_group = Re.Group.get_opt match' 3 in
+    let+ red = int_of_string_opt red_group in
+    let+ green = int_of_string_opt green_group in
+    let+ blue = int_of_string_opt blue_group in
+    Some (`Rgb (red, green, blue))
+;;
+
 (* TODO: add inverse of [serialize] *)
 let parse : string -> [ `Rgb of int * int * int ] option =
+  let ( let- ) option func =
+    match option with
+    | None -> func ()
+    | Some _ -> option
+  in
   fun string ->
-  (* in case we want to add support for other stuff later *)
-  parse_hex string
+    let- () = parse_hex string in
+    parse_rgb string
 ;;
 
 let luminance : [ `Rgb of int * int * int ] -> int =

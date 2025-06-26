@@ -63,6 +63,36 @@ module Test_parse = struct
   ;;
 
   let%test "parse invalid hexadecimal (empty)" = parse "" = None
+
+  let%test "parse valid rgb in bounds 0-255" =
+    parse "rgb(255, 140, 185)" = Some Fixtures.rgb_pink
+  ;;
+
+  let%test
+      "parse valid rgb in bounds 0-255, different formatting"
+    =
+    parse "RGb ( 133 ,66  ,33)" = Some Fixtures.rgb_brown
+  ;;
+
+  let%test "parse valid rgb out of bounds >255" =
+    parse "rgb(511, 383, 256)" = Some (`Rgb (511, 383, 256))
+  ;;
+
+  let%test "parse invalid rgb out of bounds <0" =
+    parse "rgb(-21, 476, 298)" = None
+  ;;
+
+  let%test "parse invalid rgb starting with #" =
+    parse "#rgb(57, 189, 43)" = None
+  ;;
+
+  let%test "parse invalid rgba with alpha channel" =
+    parse "rgba(100, 50, 0, 0.5)" = None
+  ;;
+
+  let%test "parse invalid rgb with ratios" =
+    parse "rgb(0.6, 0.3, 0.47)" = None
+  ;;
 end
 
 module Test_luminance = struct
