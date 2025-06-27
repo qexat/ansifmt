@@ -5,12 +5,19 @@ type t =
 
 let normalize_value (value : int) : int = abs value mod 256
 
-let normalize (color : t) : t =
+let normalize_rgb (color : [ `Rgb of int * int * int ])
+  : [> `Rgb of int * int * int ]
+  =
   match color with
-  | `Basic index -> `Basic (normalize_value index)
   | `Rgb (r, g, b) ->
     `Rgb
       (normalize_value r, normalize_value g, normalize_value b)
+;;
+
+let normalize (color : t) : t =
+  match color with
+  | `Basic index -> `Basic (normalize_value index)
+  | `Rgb _ as color -> normalize_rgb color
 ;;
 
 let to_attributes
@@ -169,7 +176,7 @@ let linearize
 
 let luminance : [ `Rgb of int * int * int ] -> float =
   fun rgb ->
-  let (r, g, b) = linearize rgb in
+  let (r, g, b) = linearize (normalize_rgb rgb) in
   (0.2126 *. r) +. (0.7152 *. g) +. (0.0722 *. b)
 ;;
 
