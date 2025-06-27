@@ -39,6 +39,29 @@ module Test_serialize = struct
   ;;
 end
 
+module Test_deserialize = struct
+  let%test "deserialize simple styling" =
+    Ansi.deserialize "blink" = Some Fixtures.simple_styling
+  ;;
+
+  let%test "deserialize simple color" =
+    Ansi.deserialize "background(rgb(255, 127, 0))"
+    = Some Fixtures.simple_color
+  ;;
+
+  let%test "deserialize styling and color" =
+    Ansi.deserialize "bold & foreground(basic(1))"
+    = Some Fixtures.styling_and_color
+  ;;
+
+  let%test "deserialize complex composition" =
+    Ansi.deserialize
+      "italic & REVERSE& foreground ( basic(42))  &background  \
+       (rgb(0, 0, 0)  )"
+    = Some Fixtures.complex_composition
+  ;;
+end
+
 module Test_show = struct
   let%test "show simple styling" =
     Ansi.show Fixtures.simple_styling = "\x1b[5m"

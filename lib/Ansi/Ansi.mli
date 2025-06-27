@@ -28,6 +28,11 @@ val to_cancelling_attributes : t -> Attributes.t
     the [ansi] escape sequence. *)
 val serialize : t -> string
 
+(** [deserialize string] produces an escape sequence from a
+    serialization [string]. If it fails to parse, returns
+    [None]. *)
+val deserialize : string -> t option
+
 (** [show ansi] renders the [ansi] escape sequence into a
     string. *)
 val show : t -> string

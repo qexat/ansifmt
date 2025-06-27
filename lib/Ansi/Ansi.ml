@@ -58,6 +58,86 @@ let rec serialize (ansi : t) : string =
     Printf.sprintf "%s & %s" (serialize left) (serialize right)
 ;;
 
+module Option = struct
+  include Option
+
+  let ( let+ ) = bind
+
+  let rec all = function
+    | [] -> None
+    | Some item :: [] -> Some [ item ]
+    | None :: _ -> None
+    | Some item :: rest ->
+      let+ rest' = all rest in
+      Some (item :: rest')
+  ;;
+end
+
+let ( let+ ) = Option.bind
+
+let rec list_to_composed = function
+  | [] -> None
+  | first :: [] -> Some first
+  | first :: rest ->
+    let+ right = list_to_composed rest in
+    Some (compose first right)
+;;
+
+let deserialize (source : string) : t option =
+  let try_remove_xground source xground =
+    if String.starts_with ~prefix:xground source
+    then (
+      let xground_length = String.length xground in
+      Some
+        (String.sub
+           source
+           xground_length
+           (String.length source - xground_length)
+         |> String.trim))
+    else None
+  in
+  let try_remove_paren_left source =
+    if String.starts_with ~prefix:"(" source
+    then Some (String.sub source 1 (String.length source - 1))
+    else None
+  in
+  let try_remove_paren_right source =
+    if String.ends_with ~suffix:")" source
+    then Some (String.sub source 0 (String.length source - 1))
+    else None
+  in
+  let parse_single source =
+    match source with
+    | "bold" -> Some `Bold
+    | "dim" -> Some `Dim
+    | "italic" -> Some `Italic
+    | "underline" -> Some `Underline
+    | "blink" -> Some `Blink
+    | "reverse" -> Some `Reverse
+    | _ when String.starts_with ~prefix:"background" source ->
+      let+ source = try_remove_xground source "background" in
+      let+ source = try_remove_paren_left source in
+      let+ source = try_remove_paren_right source in
+      let+ color = Color.parse source in
+      Some (`Background color)
+    | _ ->
+      let+ source = try_remove_xground source "foreground" in
+      let+ source = try_remove_paren_left source in
+      let+ source = try_remove_paren_right source in
+      let+ color = Color.parse source in
+      Some (`Foreground color)
+  in
+  let+ parts =
+    source
+    |> String.split_on_char '&'
+    |> List.map String.trim
+    |> List.map String.lowercase_ascii
+    |> List.map parse_single
+    |> Option.all
+  in
+  list_to_composed parts
+;;
+
 let show (ansi : t) : string =
   Printf.sprintf
     "\x1b[%sm"
