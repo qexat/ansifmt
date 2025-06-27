@@ -73,7 +73,16 @@ val basic : int -> [ `Basic of int ] option
     returns [None]. *)
 val rgb : int * int * int -> [ `Rgb of int * int * int ] option
 
-(** {2 Parsers} *)
+(** {2 Serialization/Deserialization} *)
+
+(** [serialize color] produces a serialized representation of
+    the [color].
+
+    {b Tip:} the serialized color can be retreived back using
+    {!parse}.
+
+    {b Note:} colors are normalized before serialization. *)
+val serialize : t -> string
 
 (** These functions parse strings to get a color from them. *)
 
@@ -144,12 +153,3 @@ val perceived_lightness : [ `Rgb of int * int * int ] -> int
 val best_for_contrast
   :  [ `Rgb of int * int * int ]
   -> [ `Light | `Dark ]
-
-(** [serialize color] produces a serialized representation of
-    the [color].
-
-    {b Tip:} the serialized color can be retreived back using
-    {!parse}.
-
-    {b Note:} colors are normalized before serialization. *)
-val serialize : t -> string
