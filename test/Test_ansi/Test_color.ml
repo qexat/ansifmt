@@ -36,35 +36,35 @@ end
 
 module Test_of_hex_repr = struct
   let%test
-      "of_hex_repr valid hexadecimal, 6 characters, with hash"
+      "of hex repr valid hexadecimal, 6 characters, with hash"
     =
     of_hex_repr "#FF8CB9" = Some Fixtures.rgb_pink
   ;;
 
   let%test
-      "of_hex_repr valid hexadecimal, 3 characters, with hash"
+      "of hex repr valid hexadecimal, 3 characters, with hash"
     =
     of_hex_repr "#888" = Some (`Rgb (136, 136, 136))
   ;;
 
   let%test
-      "of_hex_repr valid hexadecimal, 6 characters, no hash"
+      "of hex repr valid hexadecimal, 6 characters, no hash"
     =
     of_hex_repr "854221" = Some Fixtures.rgb_brown
   ;;
 
   let%test
-      "of_hex_repr valid hexadecimal, 3 characters, no hash"
+      "of hex repr valid hexadecimal, 3 characters, no hash"
     =
     of_hex_repr "fff" = Some (`Rgb (255, 255, 255))
   ;;
 
-  let%test "of_hex_repr invalid hexadecimal (4 characters)" =
+  let%test "of hex repr invalid hexadecimal (4 characters)" =
     of_hex_repr "#d0d0" = None
   ;;
 
   let%test
-      "of_hex_repr invalid hexadecimal (characters outside of \
+      "of hex repr invalid hexadecimal (characters outside of \
        [0-9A-F])"
     =
     of_hex_repr "#3g4zME" = None
@@ -221,11 +221,11 @@ module Test_perceived_lightness = struct
 end
 
 module Test_best_for_contrast = struct
-  let%test "best_for_contrast pink" =
+  let%test "best for contrast pink" =
     best_for_contrast Fixtures.rgb_pink = `Dark
   ;;
 
-  let%test "best_for_contrast dark brown" =
+  let%test "best for contrast brown" =
     best_for_contrast Fixtures.rgb_brown = `Light
   ;;
 end
