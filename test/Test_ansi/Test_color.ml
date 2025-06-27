@@ -213,11 +213,63 @@ module Test_parse = struct
 end
 
 module Test_luminance = struct
-  (* TODO *)
+  (* IDEA: property testing that values always fall between 0
+     and 1? *)
+
+  module Expected = struct
+    (* FROZEN 2025-06-27 *)
+
+    let pink =
+      0.43518949593728700753203497697541024535894393920898
+    ;;
+
+    let brown =
+      0.08992780222039879756135150046247872523963451385498
+    ;;
+
+    let green_by_normalization =
+      0.76032025902622812907338811783120036125183105468750
+    ;;
+  end
+
+  let%test "luminance pink" =
+    luminance Fixtures.rgb_pink = Expected.pink
+  ;;
+
+  let%test "luminance brown" =
+    luminance Fixtures.rgb_brown = Expected.brown
+  ;;
+
+  let%test "luminance green by normalization" =
+    luminance Fixtures.rgb_green_by_normalization
+    = Expected.green_by_normalization
+  ;;
 end
 
 module Test_perceived_lightness = struct
-  (* TODO *)
+  (* IDEA: property testing that values always fall between 0
+     and 100? *)
+
+  module Expected = struct
+    (* FROZEN 2025-06-27 *)
+
+    let pink = 71
+    let brown = 35
+    let green_by_normalization = 89
+  end
+
+  let%test "perceived lightness pink" =
+    perceived_lightness Fixtures.rgb_pink = Expected.pink
+  ;;
+
+  let%test "perceived lightness brown" =
+    perceived_lightness Fixtures.rgb_brown = Expected.brown
+  ;;
+
+  let%test "perceived lightness green by normalization" =
+    perceived_lightness Fixtures.rgb_green_by_normalization
+    = Expected.green_by_normalization
+  ;;
 end
 
 module Test_best_for_contrast = struct
