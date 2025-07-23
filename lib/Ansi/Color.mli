@@ -102,20 +102,6 @@ val of_hex_repr : string -> [ `Rgb of int * int * int ] option
     less than 0. *)
 val parse : string -> t option
 
-(** [parse_basic string] attempts to find a serialized basic
-    color in the [string].
-
-    This function is like [parse], but only understands
-    [basic(n)]. *)
-val parse_basic : string -> [ `Basic of int ] option
-
-(** [parse_rgb string] attempts to find a serialized RGB color
-    in the [string].
-
-    This function is like [parse], but only understands
-    [rgb(r, g, b)]. *)
-val parse_rgb : string -> [ `Rgb of int * int * int ] option
-
 (** {2 Utility functions} *)
 
 (** [luminance color] returns the luminance of the [color] as
@@ -153,3 +139,25 @@ val perceived_lightness : [ `Rgb of int * int * int ] -> int
 val best_for_contrast
   :  [ `Rgb of int * int * int ]
   -> [ `Light | `Dark ]
+
+module Basic : sig
+  (** Functions to deal with basic colors. *)
+
+  (** The regular expression used to parse basic colors. *)
+  val regular_expression : Re.re
+
+  (** [parse string] attempts to find a serialized basic color
+      in the [string]. *)
+  val parse : string -> [> `Basic of int ] option
+end
+
+module Rgb : sig
+  (** Functions to deal with RGB colors. *)
+
+  (** The regular expression used to parse RGB colors. *)
+  val regular_expression : Re.re
+
+  (** [parse string] attempts to find a serialized RGB color in
+      the [string]. *)
+  val parse : string -> [> `Rgb of int * int * int ] option
+end

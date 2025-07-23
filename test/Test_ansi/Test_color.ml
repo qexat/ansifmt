@@ -75,73 +75,73 @@ module Test_of_hex_repr = struct
   ;;
 end
 
-module Test_parse_basic = struct
+module Test_basic_parse = struct
   let%test "parse valid basic in bounds 0-255" =
-    parse_basic "basic(173)" = Some Fixtures.salmon
+    Basic.parse "basic(173)" = Some Fixtures.salmon
   ;;
 
   let%test
       "parse valid basic in bounds 0-255, different formatting"
     =
-    parse_basic " BaSiC (  244) " = Some Fixtures.middle_gray
+    Basic.parse " BaSiC (  244) " = Some Fixtures.middle_gray
   ;;
 
   let%test "parse valid basic out of bounds >255" =
-    parse_basic "basic(260)" = Some Fixtures.blue_by_modulo
+    Basic.parse "basic(260)" = Some Fixtures.blue_by_modulo
   ;;
 
   let%test "parse invalid basic out of bounds <0" =
-    parse_basic "basic(-9)" = None
+    Basic.parse "basic(-9)" = None
   ;;
 
   let%test "parse invalid basic starting with #" =
-    parse_basic "#basic(42)" = None
+    Basic.parse "#basic(42)" = None
   ;;
 
   let%test "parse invalid basic with 3 arguments" =
-    parse_basic "basic(255, 140, 185)" = None
+    Basic.parse "basic(255, 140, 185)" = None
   ;;
 
-  let%test "parse invalid empty string" = parse_basic "" = None
+  let%test "parse invalid empty string" = Basic.parse "" = None
 end
 
-module Test_parse_rgb = struct
+module Test_rgb_parse = struct
   let%test "parse valid rgb in bounds 0-255" =
-    parse_rgb "rgb(255, 140, 185)" = Some Fixtures.rgb_pink
+    Rgb.parse "rgb(255, 140, 185)" = Some Fixtures.rgb_pink
   ;;
 
   let%test
       "parse valid rgb in bounds 0-255, different formatting"
     =
-    parse_rgb " RGb ( 133 ,66  ,33)   "
+    Rgb.parse " RGb ( 133 ,66  ,33)   "
     = Some Fixtures.rgb_brown
   ;;
 
   let%test "parse valid rgb out of bounds >255" =
-    parse_rgb "rgb(511, 383, 256)" = Some (`Rgb (511, 383, 256))
+    Rgb.parse "rgb(511, 383, 256)" = Some (`Rgb (511, 383, 256))
   ;;
 
   let%test "parse invalid rgb out of bounds <0" =
-    parse_rgb "rgb(-21, 476, 298)" = None
+    Rgb.parse "rgb(-21, 476, 298)" = None
   ;;
 
   let%test "parse invalid rgb starting with #" =
-    parse_rgb "#rgb(57, 189, 43)" = None
+    Rgb.parse "#rgb(57, 189, 43)" = None
   ;;
 
   let%test "parse invalid rgba with alpha channel" =
-    parse_rgb "rgba(100, 50, 0, 0.5)" = None
+    Rgb.parse "rgba(100, 50, 0, 0.5)" = None
   ;;
 
   let%test "parse invalid rgb with ratios" =
-    parse_rgb "rgb(0.6, 0.3, 0.47)" = None
+    Rgb.parse "rgb(0.6, 0.3, 0.47)" = None
   ;;
 
   let%test "parse invalid rgb with one argument" =
-    parse_rgb "rgb(23)" = None
+    Rgb.parse "rgb(23)" = None
   ;;
 
-  let%test "parse invalid empty string" = parse_rgb "" = None
+  let%test "parse invalid empty string" = Rgb.parse "" = None
 end
 
 module Test_parse = struct

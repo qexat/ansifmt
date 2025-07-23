@@ -106,29 +106,34 @@ let of_hex_repr : string -> [ `Rgb of int * int * int ] option =
     | rest -> try_parse_hex rest
 ;;
 
-let parse_basic : string -> [> `Basic of int ] option =
-  let pattern =
+module Basic = struct
+  let regular_expression =
     Re.compile
     @@ Re.Pcre.re
          ~flags:[ `CASELESS ]
          {|^\s*basic\s*\(\s*(0|[1-9][0-9]*)\s*\)\s*$|}
-  in
-  fun string ->
-    let+ match' = Re.exec_opt pattern string in
+  ;;
+
+  let parse : string -> [> `Basic of int ] option =
+    fun string ->
+    let+ match' = Re.exec_opt regular_expression string in
     let+ group = Re.Group.get_opt match' 1 in
     let+ index = int_of_string_opt group in
     Some (`Basic index)
-;;
+  ;;
+end
 
-let parse_rgb : string -> [> `Rgb of int * int * int ] option =
-  let pattern =
+module Rgb = struct
+  let regular_expression =
     Re.compile
     @@ Re.Pcre.re
          ~flags:[ `CASELESS ]
          {|^\s*rgb\s*\(\s*(0|[1-9][0-9]*)\s*,\s*(0|[1-9][0-9]*)\s*,\s*(0|[1-9][0-9]*)\s*(,\s*)?\)\s*$|}
-  in
-  fun string ->
-    let+ match' = Re.exec_opt pattern string in
+  ;;
+
+  let parse : string -> [> `Rgb of int * int * int ] option =
+    fun string ->
+    let+ match' = Re.exec_opt regular_expression string in
     let+ red_group = Re.Group.get_opt match' 1 in
     let+ green_group = Re.Group.get_opt match' 2 in
     let+ blue_group = Re.Group.get_opt match' 3 in
@@ -136,7 +141,8 @@ let parse_rgb : string -> [> `Rgb of int * int * int ] option =
     let+ green = int_of_string_opt green_group in
     let+ blue = int_of_string_opt blue_group in
     Some (`Rgb (red, green, blue))
-;;
+  ;;
+end
 
 let parse : string -> t option =
   let ( let- )
@@ -148,8 +154,8 @@ let parse : string -> t option =
     | Some _ -> option
   in
   fun string ->
-    let- () = parse_basic string in
-    parse_rgb string
+    let- () = Basic.parse string in
+    Rgb.parse string
 ;;
 
 (* Linearization, luminance and perceived lightness algorithms
