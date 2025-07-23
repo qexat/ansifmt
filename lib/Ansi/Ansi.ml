@@ -10,6 +10,8 @@ type t =
   | `Composed of t * t
   ]
 
+let foreground color = `Foreground color
+let background color = `Background color
 let compose (left : t) (right : t) : t = `Composed (left, right)
 
 let rec to_attributes (ansi : t) : Attributes.t =
@@ -83,8 +85,10 @@ let rec list_to_composed = function
     Some (compose first right)
 ;;
 
-let deserialize (source : string) : t option =
-  let try_remove_xground source xground =
+module Deserialization = struct
+  let try_remove_xground source ~x =
+    let xground = x ^ "ground" in
+    let xg = String.sub x 0 1 ^ "g" in
     if String.starts_with ~prefix:xground source
     then (
       let xground_length = String.length xground in
@@ -94,18 +98,34 @@ let deserialize (source : string) : t option =
            xground_length
            (String.length source - xground_length)
          |> String.trim))
+    else if String.starts_with ~prefix:xg source
+    then
+      Some
+        (String.sub source 2 (String.length source - 2)
+         |> String.trim)
     else None
-  in
+  ;;
+
   let try_remove_paren_left source =
     if String.starts_with ~prefix:"(" source
     then Some (String.sub source 1 (String.length source - 1))
     else None
-  in
+  ;;
+
   let try_remove_paren_right source =
     if String.ends_with ~suffix:")" source
     then Some (String.sub source 0 (String.length source - 1))
     else None
-  in
+  ;;
+
+  let try_parse_xground source ~f ~x =
+    let+ source = try_remove_xground source ~x in
+    let+ source = try_remove_paren_left source in
+    let+ source = try_remove_paren_right source in
+    let+ color = Color.parse source in
+    Some (f color)
+  ;;
+
   let parse_single source =
     match source with
     | "bold" -> Some `Bold
@@ -115,24 +135,18 @@ let deserialize (source : string) : t option =
     | "blink" -> Some `Blink
     | "reverse" -> Some `Reverse
     | _ when String.starts_with ~prefix:"background" source ->
-      let+ source = try_remove_xground source "background" in
-      let+ source = try_remove_paren_left source in
-      let+ source = try_remove_paren_right source in
-      let+ color = Color.parse source in
-      Some (`Background color)
-    | _ ->
-      let+ source = try_remove_xground source "foreground" in
-      let+ source = try_remove_paren_left source in
-      let+ source = try_remove_paren_right source in
-      let+ color = Color.parse source in
-      Some (`Foreground color)
-  in
+      try_parse_xground source ~x:"back" ~f:background
+    | _ -> try_parse_xground source ~x:"fore" ~f:foreground
+  ;;
+end
+
+let deserialize (source : string) : t option =
   let+ parts =
     source
     |> String.split_on_char '&'
     |> List.map String.trim
     |> List.map String.lowercase_ascii
-    |> List.map parse_single
+    |> List.map Deserialization.parse_single
     |> Option.all
   in
   list_to_composed parts

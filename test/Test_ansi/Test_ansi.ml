@@ -50,7 +50,7 @@ module Test_deserialize = struct
   ;;
 
   let%test "deserialize styling and color" =
-    Ansi.deserialize "bold & foreground(basic(1))"
+    Ansi.deserialize "bold & fg(basic(1))"
     = Some Fixtures.styling_and_color
   ;;
 
