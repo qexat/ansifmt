@@ -47,15 +47,12 @@ let print
 let rec serialize (fmt : t) : string =
   match fmt with
   | Composed (left, right) ->
-    Printf.sprintf
-      "Composed(%s, %s)"
-      (serialize left)
-      (serialize right)
+    Printf.sprintf "%s ++ %s" (serialize left) (serialize right)
   | Raw string ->
-    Printf.sprintf "Raw(\"%s\")" (String.escaped string)
+    Printf.sprintf "raw(\"%s\")" (String.escaped string)
   | Stylized (fmt', ansi) ->
     Printf.sprintf
-      "Stylized(%s, %s)"
+      "stylized(%s, %s)"
       (serialize fmt')
       (Ansi.serialize ansi)
 ;;

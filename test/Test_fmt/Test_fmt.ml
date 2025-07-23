@@ -108,20 +108,19 @@ end
 
 module Test_serialize = struct
   let%test "serialize raw" =
-    Fmt.serialize Fixtures.raw = "Raw(\"hello world\")"
+    Fmt.serialize Fixtures.raw = "raw(\"hello world\")"
   ;;
 
   let%test "serialize stylized" =
     Fmt.serialize Fixtures.stylized
-    = "Stylized(Raw(\"beans\"), bold & foreground(basic(2)))"
+    = "stylized(raw(\"beans\"), bold & foreground(basic(2)))"
   ;;
 
   let%test "serialize composed" =
     Fmt.serialize Fixtures.composed
-    = "Composed(Stylized(Composed(Raw(\"blue\"), \
-       Stylized(Raw(\"+italic\"), italic)), \
-       foreground(basic(4))), Stylized(Raw(\"-blue\"), \
-       italic))"
+    = "stylized(raw(\"blue\") ++ stylized(raw(\"+italic\"), \
+       italic), foreground(basic(4))) ++ \
+       stylized(raw(\"-blue\"), italic)"
   ;;
 end
 
