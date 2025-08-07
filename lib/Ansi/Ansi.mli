@@ -42,15 +42,6 @@ type t =
     See also: {{!(&)}[( & )]} *)
 val compose : t -> t -> t
 
-(** [to_attributes ansi] produces an attribute record of the
-    [ansi] escape sequence. *)
-val to_attributes : t -> Attributes.t
-
-(** [to_cancelling_attributes ansi] produces an attribute
-    record of the escape sequence that would cancel the effects
-    of [ansi]. *)
-val to_cancelling_attributes : t -> Attributes.t
-
 (** [serialize ansi] produces a serialized representation of
     the [ansi] escape sequence.
 
