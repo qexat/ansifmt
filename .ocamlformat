@@ -1,2 +1,9 @@
 profile=janestreet
+
+# custom settings
+margin=64
+parens-tuple=always
+parens-tuple-patterns=always
+
+# to avoid formatting changes too often
 version=0.27.0

@@ -1,3 +1,34 @@
+# 1.0.0
+
+**1.0.0 is a complete rewrite of ansifmt**.
+
+At this stage, ansifmt has been fully rewritten. It now includes a test suite. This version is entirely incompatible with ansifmt 0.3.0 and older. Notably, some of its features were purposefully lost in this rewrite.
+Users should expect a new library on top of this one to replace them in the future.
+
+## Changes
+
+- `ansifmt` is now split in two modules: `Ansi`, which provides APIs for escape sequences (in `Ansi`), attributes as a low-level representation (in `Ansi.Attribute`) and terminal-compatible colors (in `Ansi.Color`), and `Fmt`, which provides a pretty-printable string API built on top of `Ansi`.
+- The `Color` API has been simplified. Colors can now be constructed using built-in integers ; they will be normalized-on-demand. `Advanced` is now called `Basic`. `Minimal` has been dropped as it is already covered by `Basic`, assuming that modern terminal emulators support 8-bit colors.
+- The `Styling` API (now called `Ansi`) has been tremendously simplified and is now based on a choice type instead of a record type.
+- `parse_hex` is now `of_hex_repr`.
+- Luminance calculation now linearizes properly the color.
+
+## Features
+
+- A new `Fmt` API is available, which allows to construct strings with specific parts stylized using `Ansi`. This includes a convenient function, `Fmt.print`, to print in the terminal, stripping escape sequences when the output channel is not a TTY (by default -- this is configurable).
+- Color parsing now supports deserialization of strings of the form `rgb(r, g, b)`.
+- `Ansi`, `Attributes`, `Color` and `Fmt` objects are serializable.
+- `Ansi` objects are now deserializable.
+
+## Removed
+
+- The `Formatting` API has been fully dropped. We estimate that `ansifmt` is not the right place to put this in. Instead, we are working on another library, built on top of `ansifmt`, that will provide these features in an improved manner.
+- The `IO` API has been removed following `Formatting`.
+
+## Performance
+
+No benchmark has been done, so this should be taken with a grain of salt, but it is likely that the new version exhibits better performance, due to simplification of implementation and lightening of the library overall.
+
 # 0.3.0
 
 ## Features

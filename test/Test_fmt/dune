@@ -1,0 +1,7 @@
+(library
+ (name test_fmt)
+ (inline_tests)
+ (libraries ansifmt)
+ (preprocess
+  (pps ppx_expect))
+ (modules test_fmt))

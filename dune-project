@@ -2,26 +2,29 @@
 
 (name ansifmt)
 
-(version 0.3.0)
+(version 1.0.0-pre1)
 
 (generate_opam_files true)
 
 (source
  (github qexat/ansifmt))
 
-(authors "Qexat <contact@qexat.com>")
+(authors "lexa <contact@qexat.com>")
 
-(maintainers "Qexat <contact@qexat.com>")
+(maintainers "lexa <contact@qexat.com>")
 
 (license MIT)
 
 (package
  (name ansifmt)
- (synopsis "A simple, lightweight library for ANSI formatting")
- (description
-  "A simple, lightweight library for ANSI formatting with powerful features such as a element-based system for pretty-printing code in the terminal.")
+ (synopsis "A simple, lightweight library for ANSI styling")
+ (description "A simple, lightweight library for ANSI styling.")
  (depends
   (ocaml
-   (>= "4.08")))
+   (>= "4.08"))
+  (ppx_inline_test :with-test)
+  (ppx_expect :with-test)
+  (re
+   (= "1.12.0")))
  (tags
-  ("ansi" "formatting" "pretty-printing" "terminal")))
+  ("ansi" "formatting" "styling" "pretty-printing" "terminal")))
