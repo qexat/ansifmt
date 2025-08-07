@@ -11,7 +11,7 @@ homepage: "https://github.com/qexat/ansifmt"
 bug-reports: "https://github.com/qexat/ansifmt/issues"
 depends: [
   "dune" {>= "3.17"}
-  "ocaml" {>= "4.08"}
+  "ocaml" {>= "5.1"}
   "ppx_inline_test" {with-test}
   "ppx_expect" {with-test}
   "re" {= "1.12.0"}

@@ -21,7 +21,7 @@
  (description "A simple, lightweight library for ANSI styling.")
  (depends
   (ocaml
-   (>= "4.08"))
+   (>= "5.1"))
   (ppx_inline_test :with-test)
   (ppx_expect :with-test)
   (re
