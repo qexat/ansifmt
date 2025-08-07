@@ -1,6 +1,6 @@
-# 0.4.0
+# 1.0.0
 
-**0.4.0 is a complete rewrite of ansifmt**.
+**1.0.0 is a complete rewrite of ansifmt**.
 
 At this stage, ansifmt has been fully rewritten. It now includes a test suite. This version is entirely incompatible with ansifmt 0.3.0 and older. Notably, some of its features were purposefully lost in this rewrite.
 Users should expect a new library on top of this one to replace them in the future.
