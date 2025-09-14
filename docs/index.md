@@ -7,7 +7,7 @@ It provides a convenient API for [SGR escape sequences](https://en.wikipedia.org
 
 ## Structure
 
-The library is comprised of two modules: `Ansi` ([documentation](https://ansifmt.github.io/ansifmt/Ansifmt/Ansi/)), which provides the aforementioned interface over escape sequences, and `Fmt` ([documentation](https://ansifmt.github.io/ansifmt/Ansifmt/Ansi/)) for dealing with that pretty-printable stylized string data type.
+The library is comprised of two modules: `Ansi` ([documentation](https://qexat.github.io/ansifmt/Ansifmt/Ansi/)), which provides the aforementioned interface over escape sequences, and `Fmt` ([documentation](https://qexat.github.io/ansifmt/Ansifmt/Ansi/)) for dealing with that pretty-printable stylized string data type.
 
 > [!TIP]
 > For simple usage, you probably want to stick to `Fmt`.
