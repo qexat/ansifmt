@@ -159,6 +159,9 @@ val unshow : t -> string
     *)
 val wrap : t -> string -> string
 
+(** [enrich] is a synonym of [wrap]. *)
+val enrich : t -> string -> string
+
 (** [left & right] is the same as {!compose} [left right].
 
     {b NOTE:} [&] is associative but not commutative.

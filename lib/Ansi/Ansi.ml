@@ -199,6 +199,7 @@ let wrap (ansi : t) (string : string) : string =
       cancelling_ansi_string
 ;;
 
+let enrich = wrap
 let ( & ) = compose
 
 module Attributes = Attributes
