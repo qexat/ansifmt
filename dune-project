@@ -2,7 +2,7 @@
 
 (name ansifmt)
 
-(version 1.0.0-pre2)
+(version 2.0.0)
 
 (generate_opam_files true)
 
@@ -25,6 +25,8 @@
   (ppx_inline_test :with-test)
   (ppx_expect :with-test)
   (re
-   (= "1.12.0")))
+   (= "1.12.0"))
+  (rich-string
+   (>= "1.0.0")))
  (tags
   ("ansi" "formatting" "styling" "pretty-printing" "terminal")))

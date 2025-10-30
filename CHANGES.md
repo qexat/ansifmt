@@ -1,3 +1,19 @@
+# 2.0.0
+
+## Changes
+
+- `Fmt` has been rewritten from scratch to use my own library called `rich-string`. As such, a lot of tests have been dropped as they already exist upstream. The interface is mostly the same, besides the type itself and a few parameters that got renamed.
+- `Fmt.print`'s `ending` parameter now takes a `Fmt.t option` instead of a `string option`.
+
+## Features
+
+- `Ansi` and `Color` now implement their own dedicated equality. No need to use the built-in polymorphic equality anymore.
+
+## Removed
+
+- `Fmt`'s serialization feature is now dependent on `rich-string`. Since the latter does not provide it yet, serialization was dropped for now.
+- `Fmt.show` was also removed. On top of not being provided by `rich-string` and being the identity function, it was not all that useful.
+
 # 1.0.0
 
 **1.0.0 is a complete rewrite of ansifmt**.

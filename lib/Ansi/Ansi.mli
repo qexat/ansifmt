@@ -42,6 +42,10 @@ type t =
     See also: {{!(&)}[( & )]} *)
 val compose : t -> t -> t
 
+(** [ansi1 = ansi2] determines whether two escape sequences are
+    equal. *)
+val ( = ) : t -> t -> bool
+
 (** [serialize ansi] produces a serialized representation of
     the [ansi] escape sequence.
 
@@ -154,6 +158,9 @@ val unshow : t -> string
     See also: {!Ansifmt.Fmt}, {!show}, {!unshow}.
     *)
 val wrap : t -> string -> string
+
+(** [enrich] is a synonym of [wrap]. *)
+val enrich : t -> string -> string
 
 (** [left & right] is the same as {!compose} [left right].
 

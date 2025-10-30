@@ -1,6 +1,6 @@
 (library
  (public_name ansifmt)
  (name ansifmt)
- (libraries re))
+ (libraries re rich-string))
 
 (include_subdirs qualified)

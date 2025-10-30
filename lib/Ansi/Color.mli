@@ -31,6 +31,14 @@ val to_attributes
   -> t
   -> Attributes.t
 
+(** {2 Comparison} *)
+
+(** [color1 = color2] determines whether two colors are equal.
+
+    {b Note:} [`Basic] colors are never equal to [`Rgb] ones
+    even if your terminal renders them identically.  *)
+val ( = ) : t -> t -> bool
+
 (** {2 Constants} *)
 
 (** These constants are provided for convenience. They
