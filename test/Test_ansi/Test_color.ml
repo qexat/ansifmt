@@ -258,19 +258,11 @@ module Test_luminance = struct
   ;;
 
   module Expected = struct
-    (* FROZEN 2025-06-27 *)
+    (* FROZEN 2025-10-30 *)
 
-    let pink =
-      0.43518949593728700753203497697541024535894393920898
-    ;;
-
-    let brown =
-      0.08992780222039879756135150046247872523963451385498
-    ;;
-
-    let green_by_normalization =
-      0.76032025902622812907338811783120036125183105468750
-    ;;
+    let pink = 0.4351894959372870
+    let brown = 0.0899278022203988
+    let green_by_normalization = 0.7603202590262281
   end
 
   let%test "luminance pink" =
