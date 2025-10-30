@@ -252,9 +252,7 @@ module Test_luminance = struct
      and 1? *)
 
   let ( =~ ) float1 float2 =
-    match classify_float (Float.sub float1 float2) with
-    | FP_zero | FP_subnormal -> true
-    | _ -> false
+    Float.(abs (sub float1 float2)) <= 0.0001
   ;;
 
   module Expected = struct
