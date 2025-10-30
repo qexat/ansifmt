@@ -10,6 +10,23 @@ type t =
   | `Composed of t * t
   ]
 
+let rec ( = ) (left : t) (right : t) =
+  match (left, right) with
+  | (`Bold, `Bold)
+  | (`Dim, `Dim)
+  | (`Italic, `Italic)
+  | (`Underline, `Underline)
+  | (`Blink, `Blink)
+  | (`Reverse, `Reverse) -> true
+  | (`Foreground left_color, `Foreground right_color) ->
+    Color.(left_color = right_color)
+  | (`Background left_color, `Background right_color) ->
+    Color.(left_color = right_color)
+  | (`Composed (left1, left2), `Composed (right1, right2)) ->
+    left1 = right1 && left2 = right2
+  | (_, _) -> false
+;;
+
 let foreground color = `Foreground color
 let background color = `Background color
 let compose (left : t) (right : t) : t = `Composed (left, right)

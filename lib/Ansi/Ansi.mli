@@ -42,6 +42,10 @@ type t =
     See also: {{!(&)}[( & )]} *)
 val compose : t -> t -> t
 
+(** [ansi1 = ansi2] determines whether two escape sequences are
+    equal. *)
+val ( = ) : t -> t -> bool
+
 (** [serialize ansi] produces a serialized representation of
     the [ansi] escape sequence.
 
