@@ -3,6 +3,14 @@ type t =
   | `Rgb of int * int * int
   ]
 
+let ( = ) (left : t) (right : t) =
+  match (left, right) with
+  | (`Basic i, `Basic j) -> Int.equal i j
+  | (`Rgb (r1, g1, b1), `Rgb (r2, g2, b2)) ->
+    Int.equal r1 r2 && Int.equal g1 g2 && Int.equal b1 b2
+  | (_, _) -> false
+;;
+
 let normalize_value (value : int) : int = abs value mod 256
 
 let normalize_rgb (color : [ `Rgb of int * int * int ])
@@ -57,7 +65,7 @@ let bright_white : t = `Basic 15
 
 let basic : int -> [ `Basic of int ] option =
   fun index ->
-  if index = normalize_value index
+  if Int.(equal index (normalize_value index))
   then Some (`Basic index)
   else None
 ;;
@@ -65,9 +73,9 @@ let basic : int -> [ `Basic of int ] option =
 let rgb : int * int * int -> [ `Rgb of int * int * int ] option =
   fun (r, g, b) ->
   if
-    r = normalize_value r
-    && g = normalize_value g
-    && b = normalize_value b
+    Int.(equal r (normalize_value r))
+    && Int.(equal g (normalize_value g))
+    && Int.(equal b (normalize_value b))
   then Some (`Rgb (r, g, b))
   else None
 ;;
