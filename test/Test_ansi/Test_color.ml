@@ -1,6 +1,8 @@
-open Ansifmt.Ansi.Color
+open Ansifmt.Ansi
 
 module Fixtures = struct
+  open Color
+
   let bright_magenta = bright_magenta
   let salmon = `Basic 173
   let middle_gray = `Basic 244
@@ -12,204 +14,237 @@ module Fixtures = struct
 end
 
 module Test_basic = struct
+  let ( = ) = Option.equal Color.( = )
+
   let%test "basic valid integer" =
-    basic 244 = Some Fixtures.middle_gray
+    (Color.basic 244 :> Color.t option)
+    = Some Fixtures.middle_gray
   ;;
 
-  let%test "basic integer too large" = basic 432 = None
-  let%test "basic negative integer" = basic ~-17 = None
+  let%test "basic integer too large" =
+    (Color.basic 432 :> Color.t option) = None
+  ;;
+
+  let%test "basic negative integer" =
+    (Color.basic ~-17 :> Color.t option) = None
+  ;;
 end
 
 module Test_rgb = struct
+  let ( = ) = Option.equal Color.( = )
+
   let%test "rgb valid integers" =
-    rgb (255, 140, 185) = Some Fixtures.rgb_pink
+    (Color.rgb (255, 140, 185) :> Color.t option)
+    = Some Fixtures.rgb_pink
   ;;
 
   let%test "rgb one integer is not valid" =
-    rgb (47, ~-5, 210) = None
+    (Color.rgb (47, ~-5, 210) :> Color.t option) = None
   ;;
 
   let%test "rgb all integers are invalid" =
-    rgb (~-21, 476, 298) = None
+    (Color.rgb (~-21, 476, 298) :> Color.t option) = None
   ;;
 end
 
 module Test_of_hex_repr = struct
+  let ( = ) = Option.equal Color.( = )
+
   let%test
       "of hex repr valid hexadecimal, 6 characters, with hash"
     =
-    of_hex_repr "#FF8CB9" = Some Fixtures.rgb_pink
+    (Color.of_hex_repr "#FF8CB9" :> Color.t option)
+    = Some Fixtures.rgb_pink
   ;;
 
   let%test
       "of hex repr valid hexadecimal, 3 characters, with hash"
     =
-    of_hex_repr "#888" = Some (`Rgb (136, 136, 136))
+    (Color.of_hex_repr "#888" :> Color.t option)
+    = Some (`Rgb (136, 136, 136))
   ;;
 
   let%test
       "of hex repr valid hexadecimal, 6 characters, no hash"
     =
-    of_hex_repr "854221" = Some Fixtures.rgb_brown
+    (Color.of_hex_repr "854221" :> Color.t option)
+    = Some Fixtures.rgb_brown
   ;;
 
   let%test
       "of hex repr valid hexadecimal, 3 characters, no hash"
     =
-    of_hex_repr "fff" = Some (`Rgb (255, 255, 255))
+    (Color.of_hex_repr "fff" :> Color.t option)
+    = Some (`Rgb (255, 255, 255))
   ;;
 
   let%test "of hex repr invalid hexadecimal (4 characters)" =
-    of_hex_repr "#d0d0" = None
+    (Color.of_hex_repr "#d0d0" :> Color.t option) = None
   ;;
 
   let%test
       "of hex repr invalid hexadecimal (characters outside of \
        [0-9A-F])"
     =
-    of_hex_repr "#3g4zME" = None
+    (Color.of_hex_repr "#3g4zME" :> Color.t option) = None
   ;;
 
   let%test "of_hex_repr invalid hexadecimal (empty)" =
-    of_hex_repr "" = None
+    (Color.of_hex_repr "" :> Color.t option) = None
   ;;
 end
 
 module Test_basic_parse = struct
+  let ( = ) = Option.equal Color.( = )
+
   let%test "parse valid basic in bounds 0-255" =
-    Basic.parse "basic(173)" = Some Fixtures.salmon
+    Color.Basic.parse "basic(173)" = Some Fixtures.salmon
   ;;
 
   let%test
       "parse valid basic in bounds 0-255, different formatting"
     =
-    Basic.parse " BaSiC (  244) " = Some Fixtures.middle_gray
+    Color.Basic.parse " BaSiC (  244) "
+    = Some Fixtures.middle_gray
   ;;
 
   let%test "parse valid basic out of bounds >255" =
-    Basic.parse "basic(260)" = Some Fixtures.blue_by_modulo
+    Color.Basic.parse "basic(260)"
+    = Some Fixtures.blue_by_modulo
   ;;
 
   let%test "parse invalid basic out of bounds <0" =
-    Basic.parse "basic(-9)" = None
+    Color.Basic.parse "basic(-9)" = None
   ;;
 
   let%test "parse invalid basic starting with #" =
-    Basic.parse "#basic(42)" = None
+    Color.Basic.parse "#basic(42)" = None
   ;;
 
   let%test "parse invalid basic with 3 arguments" =
-    Basic.parse "basic(255, 140, 185)" = None
+    Color.Basic.parse "basic(255, 140, 185)" = None
   ;;
 
-  let%test "parse invalid empty string" = Basic.parse "" = None
+  let%test "parse invalid empty string" =
+    Color.Basic.parse "" = None
+  ;;
 end
 
 module Test_rgb_parse = struct
+  let ( = ) = Option.equal Color.( = )
+
   let%test "parse valid rgb in bounds 0-255" =
-    Rgb.parse "rgb(255, 140, 185)" = Some Fixtures.rgb_pink
+    Color.Rgb.parse "rgb(255, 140, 185)"
+    = Some Fixtures.rgb_pink
   ;;
 
   let%test
       "parse valid rgb in bounds 0-255, different formatting"
     =
-    Rgb.parse " RGb ( 133 ,66  ,33)   "
+    Color.Rgb.parse " RGb ( 133 ,66  ,33)   "
     = Some Fixtures.rgb_brown
   ;;
 
   let%test "parse valid rgb out of bounds >255" =
-    Rgb.parse "rgb(511, 383, 256)" = Some (`Rgb (511, 383, 256))
+    Color.Rgb.parse "rgb(511, 383, 256)"
+    = Some (`Rgb (511, 383, 256))
   ;;
 
   let%test "parse invalid rgb out of bounds <0" =
-    Rgb.parse "rgb(-21, 476, 298)" = None
+    Color.Rgb.parse "rgb(-21, 476, 298)" = None
   ;;
 
   let%test "parse invalid rgb starting with #" =
-    Rgb.parse "#rgb(57, 189, 43)" = None
+    Color.Rgb.parse "#rgb(57, 189, 43)" = None
   ;;
 
   let%test "parse invalid rgba with alpha channel" =
-    Rgb.parse "rgba(100, 50, 0, 0.5)" = None
+    Color.Rgb.parse "rgba(100, 50, 0, 0.5)" = None
   ;;
 
   let%test "parse invalid rgb with ratios" =
-    Rgb.parse "rgb(0.6, 0.3, 0.47)" = None
+    Color.Rgb.parse "rgb(0.6, 0.3, 0.47)" = None
   ;;
 
   let%test "parse invalid rgb with one argument" =
-    Rgb.parse "rgb(23)" = None
+    Color.Rgb.parse "rgb(23)" = None
   ;;
 
-  let%test "parse invalid empty string" = Rgb.parse "" = None
+  let%test "parse invalid empty string" =
+    Color.Rgb.parse "" = None
+  ;;
 end
 
 module Test_parse = struct
+  let ( = ) = Option.equal Color.( = )
+
   (* NOTE: These tests are copies of Test_parse_basic and
      Test_parse_rgb, because we want to be sure that their
      behaviors are matched without introducing functor logic *)
 
   let%test "parse valid basic in bounds 0-255" =
-    parse "basic(173)" = Some Fixtures.salmon
+    Color.parse "basic(173)" = Some Fixtures.salmon
   ;;
 
   let%test
       "parse valid basic in bounds 0-255, different formatting"
     =
-    parse " BaSiC (  244) " = Some Fixtures.middle_gray
+    Color.parse " BaSiC (  244) " = Some Fixtures.middle_gray
   ;;
 
   let%test "parse valid basic out of bounds >255" =
-    parse "basic(260)" = Some Fixtures.blue_by_modulo
+    Color.parse "basic(260)" = Some Fixtures.blue_by_modulo
   ;;
 
   let%test "parse invalid basic out of bounds <0" =
-    parse "basic(-9)" = None
+    Color.parse "basic(-9)" = None
   ;;
 
   let%test "parse invalid basic starting with #" =
-    parse "#basic(42)" = None
+    Color.parse "#basic(42)" = None
   ;;
 
   let%test "parse invalid basic with 3 arguments" =
-    parse "basic(255, 140, 185)" = None
+    Color.parse "basic(255, 140, 185)" = None
   ;;
 
   let%test "parse valid rgb in bounds 0-255" =
-    parse "rgb(255, 140, 185)" = Some Fixtures.rgb_pink
+    Color.parse "rgb(255, 140, 185)" = Some Fixtures.rgb_pink
   ;;
 
   let%test
       "parse valid rgb in bounds 0-255, different formatting"
     =
-    parse " RGb ( 133 ,66  ,33)   " = Some Fixtures.rgb_brown
+    Color.parse " RGb ( 133 ,66  ,33)   "
+    = Some Fixtures.rgb_brown
   ;;
 
   let%test "parse valid rgb out of bounds >255" =
-    parse "rgb(511, 383, 256)" = Some (`Rgb (511, 383, 256))
+    Color.parse "rgb(511, 383, 256)"
+    = Some (`Rgb (511, 383, 256))
   ;;
 
   let%test "parse invalid rgb out of bounds <0" =
-    parse "rgb(-21, 476, 298)" = None
+    Color.parse "rgb(-21, 476, 298)" = None
   ;;
 
   let%test "parse invalid rgb starting with #" =
-    parse "#rgb(57, 189, 43)" = None
+    Color.parse "#rgb(57, 189, 43)" = None
   ;;
 
   let%test "parse invalid rgba with alpha channel" =
-    parse "rgba(100, 50, 0, 0.5)" = None
+    Color.parse "rgba(100, 50, 0, 0.5)" = None
   ;;
 
   let%test "parse invalid rgb with ratios" =
-    parse "rgb(0.6, 0.3, 0.47)" = None
+    Color.parse "rgb(0.6, 0.3, 0.47)" = None
   ;;
 
   let%test "parse invalid rgb with one argument" =
-    parse "rgb(23)" = None
+    Color.parse "rgb(23)" = None
   ;;
 
-  let%test "parse invalid empty string" = parse "" = None
+  let%test "parse invalid empty string" = Color.parse "" = None
 end
 
 module Test_luminance = struct
@@ -233,20 +268,27 @@ module Test_luminance = struct
   end
 
   let%test "luminance pink" =
-    luminance Fixtures.rgb_pink = Expected.pink
+    Float.equal
+      (Color.luminance Fixtures.rgb_pink)
+      Expected.pink
   ;;
 
   let%test "luminance brown" =
-    luminance Fixtures.rgb_brown = Expected.brown
+    Float.equal
+      (Color.luminance Fixtures.rgb_brown)
+      Expected.brown
   ;;
 
   let%test "luminance green by normalization" =
-    luminance Fixtures.rgb_green_by_normalization
-    = Expected.green_by_normalization
+    Float.equal
+      (Color.luminance Fixtures.rgb_green_by_normalization)
+      Expected.green_by_normalization
   ;;
 end
 
 module Test_perceived_lightness = struct
+  let ( = ) = Int.equal
+
   (* IDEA: property testing that values always fall between 0
      and 100? *)
 
@@ -259,52 +301,60 @@ module Test_perceived_lightness = struct
   end
 
   let%test "perceived lightness pink" =
-    perceived_lightness Fixtures.rgb_pink = Expected.pink
+    Color.perceived_lightness Fixtures.rgb_pink = Expected.pink
   ;;
 
   let%test "perceived lightness brown" =
-    perceived_lightness Fixtures.rgb_brown = Expected.brown
+    Color.perceived_lightness Fixtures.rgb_brown
+    = Expected.brown
   ;;
 
   let%test "perceived lightness green by normalization" =
-    perceived_lightness Fixtures.rgb_green_by_normalization
+    Color.perceived_lightness
+      Fixtures.rgb_green_by_normalization
     = Expected.green_by_normalization
   ;;
 end
 
 module Test_best_for_contrast = struct
+  (* the compared type is just two tags so it's not too
+     horrible to use [=] here. *)
+  let ( = ) = Stdlib.( = )
+
   let%test "best for contrast pink" =
-    best_for_contrast Fixtures.rgb_pink = `Dark
+    Color.best_for_contrast Fixtures.rgb_pink = `Dark
   ;;
 
   let%test "best for contrast brown" =
-    best_for_contrast Fixtures.rgb_brown = `Light
+    Color.best_for_contrast Fixtures.rgb_brown = `Light
   ;;
 end
 
 module Test_serialize = struct
+  let ( = ) = String.equal
+
   let%test "serialize basic bright magenta" =
-    serialize Fixtures.bright_magenta = "basic(13)"
+    Color.serialize Fixtures.bright_magenta = "basic(13)"
   ;;
 
   let%test "serialize basic salmon" =
-    serialize Fixtures.salmon = "basic(173)"
+    Color.serialize Fixtures.salmon = "basic(173)"
   ;;
 
   let%test "serialize basic blue by modulo" =
-    serialize Fixtures.blue_by_modulo = "basic(4)"
+    Color.serialize Fixtures.blue_by_modulo = "basic(4)"
   ;;
 
   let%test "serialize basic bright red by abs" =
-    serialize Fixtures.bright_red_by_abs = "basic(9)"
+    Color.serialize Fixtures.bright_red_by_abs = "basic(9)"
   ;;
 
   let%test "serialize rgb pink" =
-    serialize Fixtures.rgb_pink = "rgb(255, 140, 185)"
+    Color.serialize Fixtures.rgb_pink = "rgb(255, 140, 185)"
   ;;
 
   let%test "serialize rgb green by normalization" =
-    serialize Fixtures.rgb_green_by_normalization
+    Color.serialize Fixtures.rgb_green_by_normalization
     = "rgb(127, 255, 0)"
   ;;
 end
