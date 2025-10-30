@@ -251,6 +251,12 @@ module Test_luminance = struct
   (* IDEA: property testing that values always fall between 0
      and 1? *)
 
+  let ( =~ ) float1 float2 =
+    match classify_float (Float.sub float1 float2) with
+    | FP_zero | FP_subnormal -> true
+    | _ -> false
+  ;;
+
   module Expected = struct
     (* FROZEN 2025-06-27 *)
 
@@ -268,21 +274,16 @@ module Test_luminance = struct
   end
 
   let%test "luminance pink" =
-    Float.equal
-      (Color.luminance Fixtures.rgb_pink)
-      Expected.pink
+    Color.luminance Fixtures.rgb_pink =~ Expected.pink
   ;;
 
   let%test "luminance brown" =
-    Float.equal
-      (Color.luminance Fixtures.rgb_brown)
-      Expected.brown
+    Color.luminance Fixtures.rgb_brown =~ Expected.brown
   ;;
 
   let%test "luminance green by normalization" =
-    Float.equal
-      (Color.luminance Fixtures.rgb_green_by_normalization)
-      Expected.green_by_normalization
+    Color.luminance Fixtures.rgb_green_by_normalization
+    =~ Expected.green_by_normalization
   ;;
 end
 
